@@ -1,5 +1,8 @@
 package com.weather.tracking.entity;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +17,8 @@ import javax.persistence.OneToOne;
 import java.util.Set;
 
 @Entity
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class WeatherProfile extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

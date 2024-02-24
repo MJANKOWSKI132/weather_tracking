@@ -9,3 +9,9 @@
 - Enhance the details provided in ErrorResponseDto
 - Add validation to incoming request bodies in particular @Email
 - Move initial city names to external config
+- Add OpenAPI documentation to endpoints
+- Add postman collection to root directory
+- Add kubernetes file to deploy Dockerfile
+- Add spring profiles
+- Add retry functionality to OpenWeatherClient
+- Add circuit breaker functionality?

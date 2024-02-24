@@ -4,6 +4,6 @@ import lombok.Data;
 import lombok.Value;
 
 @Value
-public class ErrorResponseDto {
-    private String message;
+public class WeatherProfileCreationResponseDto {
+    private Long id;
 }
