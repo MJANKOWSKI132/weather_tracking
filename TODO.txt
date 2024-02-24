@@ -1,0 +1,8 @@
+- Add Global exception handler
+- Ensure schedulers don't run in conflicting manner (fetch first 1 row only, sort by timeStarted and timeEnded and ensure no conflicts)
+- Implement Audit Logging using AuditLogEntry and AOP
+- Ensure all columns have updated, nullable and unique set accordingly
+- Add unit testing
+- Add integration testing using TestContainers
+- Add jacoco for test coverage
+- Add checkstyle

@@ -1,5 +1,16 @@
 package com.weather.tracking.entity;
 
+import com.weather.tracking.dto.response.CityWeatherResponseDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.Value;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
+
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +19,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class CityWeather extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,6 +28,57 @@ public class CityWeather extends Auditable {
     @OneToOne
     @JoinColumn(name = "city_id")
     private City city;
+    @Embedded
+    private Main main;
+    @Embedded
+    private Weather weather;
+    @Embedded
+    private Wind wind;
 
-    // TODO: add all information from city weather
+    public static CityWeather fromDto(CityWeatherResponseDto dto) {
+        CityWeather cityWeather = new CityWeather();
+
+        Wind wind = new Wind();
+        BeanUtils.copyProperties(dto.getWind(), wind);
+        cityWeather.setWind(wind);
+
+        Main main = new Main();
+        BeanUtils.copyProperties(dto.getMain(), main);
+        cityWeather.setMain(main);
+
+        Weather weather = new Weather();
+        if (CollectionUtils.isEmpty(dto.getWeatherList()))
+            throw new RuntimeException("ERROR!"); // TODO: modify
+        BeanUtils.copyProperties(dto.getWeatherList().get(0), weather);
+        cityWeather.setWeather(weather);
+
+        return cityWeather;
+    }
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    public static class Wind {
+        private double speed;
+    }
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Weather {
+        private String main;
+    }
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    public static class Main {
+        private double temp;
+        private double feelsLike;
+        private double tempMin;
+        private double tempMax;
+        private double pressure;
+        private double humidity;
+    }
 }
