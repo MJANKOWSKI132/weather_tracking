@@ -6,3 +6,6 @@
 - Add integration testing using TestContainers
 - Add jacoco for test coverage
 - Add checkstyle
+- Enhance the details provided in ErrorResponseDto
+- Add validation to incoming request bodies in particular @Email
+- Move initial city names to external config

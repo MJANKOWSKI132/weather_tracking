@@ -33,14 +33,14 @@ public class StartupListener implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        List<City> initialCities = List.of(
-                new City("sydney"),
-                new City("melbourne"),
-                new City("adelaide"),
-                new City("perth"),
-                new City("darwin"),
-                new City("canberra")
-        );
+        List<String> initialCityNames = List.of("sydney", "melbourne", "adelaide", "perth", "darwin", "canberra");
+        List<City> initialCities = new ArrayList<>();
+        for (String initalCityName : initialCityNames) {
+            boolean cityAlreadyExists = cityRepository.existsByName(initalCityName);
+            if (cityAlreadyExists)
+                continue;
+            initialCities.add(new City(initalCityName));
+        }
         cityRepository.saveAll(initialCities);
         cityWeatherService.pollCityWeatherInformation(initialCities);
     }
