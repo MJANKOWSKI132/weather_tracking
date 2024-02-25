@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS city_weather (
 
 CREATE TABLE IF NOT EXISTS weather_profile (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nickname VARCHAR(255) NOT NULL UNIQUE,
+    nickname VARCHAR(255) NOT NULL,
     user_id BIGINT,
     time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_modified TIMESTAMP NULL,
@@ -64,4 +64,14 @@ CREATE TABLE IF NOT EXISTS city_weather_profile (
     version INT DEFAULT 1,
     FOREIGN KEY (weather_profile_id) REFERENCES weather_profile(id),
     FOREIGN KEY (city_id) REFERENCES city(id)
+);
+
+CREATE TABLE IF NOT EXISTS audit_log_entry (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    time_started TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    time_finished TIMESTAMP NULL,
+    status VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    user_email VARCHAR(255) NULL,
+    additional_context VARCHAR(255) NULL
 );

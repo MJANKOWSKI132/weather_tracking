@@ -1,5 +1,6 @@
 package com.weather.tracking.service;
 
+import com.weather.tracking.audit.Auditable;
 import com.weather.tracking.dto.request.DeleteWeatherProfileRequestDto;
 import com.weather.tracking.dto.request.WeatherProfileCreationRequestDto;
 import com.weather.tracking.dto.request.WeatherProfileUpdateRequestDto;
@@ -11,6 +12,7 @@ import com.weather.tracking.entity.CityWeather;
 import com.weather.tracking.entity.CityWeatherProfile;
 import com.weather.tracking.entity.User;
 import com.weather.tracking.entity.WeatherProfile;
+import com.weather.tracking.enums.AuditAction;
 import com.weather.tracking.exception.UserDoesNotExistException;
 import com.weather.tracking.exception.WeatherProfileAlreadyExistsException;
 import com.weather.tracking.exception.WeatherProfileDoesNotExistException;
@@ -47,6 +49,7 @@ public class WeatherProfileService {
     }
 
     @Transactional
+    @Auditable(action = AuditAction.CREATE_WEATHER_PROFILE)
     public WeatherProfileCreationResponseDto createWeatherProfile(WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException {
         String nickname = weatherProfileCreationRequest.getNickname();
         String parentUserEmail = weatherProfileCreationRequest.getUserEmail();
@@ -80,6 +83,7 @@ public class WeatherProfileService {
         return new WeatherProfileCreationResponseDto(weatherProfile.getId());
     }
 
+    @Auditable(action = AuditAction.UPDATE_WEATHER_PROFILE)
     public void updateWeatherProfile(WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws UserDoesNotExistException, WeatherProfileDoesNotExistException {
         Long weatherProfileId = weatherProfileUpdateRequest.getId();
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
@@ -118,6 +122,7 @@ public class WeatherProfileService {
         weatherProfileRepository.save(matchingWeatherProfile);
     }
 
+    @Auditable(action = AuditAction.DELETE_WEATHER_PROFILE)
     public void deleteWeatherProfile(DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
         Long weatherProfileId = deleteWeatherProfileRequest.getId();
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
@@ -136,6 +141,7 @@ public class WeatherProfileService {
         weatherProfileRepository.delete(matchingWeatherProfile);
     }
 
+    @Auditable(action = AuditAction.RETRIEVE_ALL_WEATHER_PROFILES_FOR_USER)
     public List<WeatherProfileResponseDto> retrieveWeatherProfiles(String userEmail) throws UserDoesNotExistException {
         if (!userRepository.existsByEmail(userEmail))
             throw new UserDoesNotExistException(userEmail);
@@ -153,6 +159,7 @@ public class WeatherProfileService {
         return responseList;
     }
 
+    @Auditable(action = AuditAction.RETRIEVE_SPECIFIC_WEATHER_PROFILE)
     public WeatherProfileResponseDto retrieveWeatherProfile(Long id, String userEmail) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
                 .findById(id)

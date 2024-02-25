@@ -1,4 +1,4 @@
-INSERT INTO city (name) VALUES
+INSERT IGNORE INTO city (name) VALUES
 ('sydney'),
 ('melbourne'),
 ('adelaide'),
