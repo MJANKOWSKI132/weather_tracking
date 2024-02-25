@@ -8,7 +8,9 @@ import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeather;
 import com.weather.tracking.repository.CityRepository;
 import com.weather.tracking.repository.CityWeatherRepository;
+import com.weather.tracking.util.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,8 @@ public class CityWeatherService {
     private final OpenWeatherClient openWeatherClient;
     private final CityWeatherRepository cityWeatherRepository;
 
-    private static final String API_KEY = "8e3436bc12e012bc870174234b344152";
+    @Value("${apiKey}")
+    private String apiKey;
 
     public CityWeatherService(final CityRepository cityRepository,
                               final OpenWeatherClient openWeatherClient,
@@ -48,7 +51,7 @@ public class CityWeatherService {
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
-                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getWeatherInformation(city.getName(), API_KEY, null);
+                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getWeatherInformation(city.getName(), apiKey, Constants.METRIC);
                         CityWeather cityWeather;
                         if (Objects.isNull(city.getCityWeather())) {
                             cityWeather = CityWeather.fromDto(responseDto);

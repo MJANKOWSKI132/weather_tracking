@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -61,9 +62,13 @@ public class WeatherProfileService {
         if (weatherProfileRepository.existsByNicknameAndParentUser(nickname, parentUser))
             throw new WeatherProfileAlreadyExistsException(nickname, parentUser.getEmail());
 
-        Set<City> matchingCities = cityRepository.findAllByNameIn(weatherProfileCreationRequest.getCityNames());
+        Set<String> caseInsensitiveCityNames = weatherProfileCreationRequest.getCityNames()
+                .stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+        Set<City> matchingCities = cityRepository.findAllByNameIn(caseInsensitiveCityNames);
         if (CollectionUtils.isEmpty(matchingCities))
-            throw new NoMatchingCitiesException(weatherProfileCreationRequest.getCityNames());
+            throw new NoMatchingCitiesException(caseInsensitiveCityNames);
         WeatherProfile weatherProfile = new WeatherProfile();
         weatherProfile.setNickname(nickname);
         weatherProfile.setParentUser(parentUser);
@@ -94,7 +99,10 @@ public class WeatherProfileService {
                 .orElseThrow(() -> new WeatherProfileDoesNotExistException(weatherProfileId));
 
         String nicknameToChangeTo = weatherProfileUpdateRequest.getNickname();
-        Set<String> cityNamesToChangeTo = weatherProfileUpdateRequest.getCityNames();
+        Set<String> caseInsensitiveCityNamesToChangeTo = weatherProfileUpdateRequest.getCityNames()
+                .stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
 
         if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail))
             throw new UnauthorizedException(String.format("The Weather Profile with ID: %s was not created by you", weatherProfileId));
@@ -102,9 +110,9 @@ public class WeatherProfileService {
         if (weatherProfileRepository.existsByNicknameAndParentUserEmail(nicknameToChangeTo, parentUserEmail))
             throw new WeatherProfileAlreadyExistsException(nicknameToChangeTo, parentUserEmail);
 
-        Set<City> matchingCitiesToChangeTo = cityRepository.findAllByNameIn(cityNamesToChangeTo);
+        Set<City> matchingCitiesToChangeTo = cityRepository.findAllByNameIn(caseInsensitiveCityNamesToChangeTo);
         if (CollectionUtils.isEmpty(matchingCitiesToChangeTo))
-            throw new NoMatchingCitiesException(cityNamesToChangeTo);
+            throw new NoMatchingCitiesException(caseInsensitiveCityNamesToChangeTo);
 
         if (Objects.nonNull(nicknameToChangeTo))
             matchingWeatherProfile.setNickname(nicknameToChangeTo);

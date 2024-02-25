@@ -12,5 +12,5 @@ public interface OpenWeatherClient {
     @GetMapping("/data/2.5/weather")
     OpenWeatherCityWeatherResponseDto getWeatherInformation(@RequestParam(name = "q") String cityName,
                                                      @RequestParam(name = "appId") String apiKey,
-                                                     @RequestParam(defaultValue = "metric") String optionalUnits);
+                                                     @RequestParam(defaultValue = "metric", name = "units") String units);
 }

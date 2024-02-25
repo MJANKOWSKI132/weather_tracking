@@ -1,15 +1,12 @@
 VERY IMPORTANT
 
-- Ensure all columns have updated, nullable and unique set accordingly
 - Add integration testing using TestContainers
 - Add validation to incoming request bodies in particular @Email
 - Add retry functionality to OpenWeatherClient
 - Add appropriate transaction properties (rollbackOn, session data etc.)
 - Consider concurrency concerns e.g. dirty reads, non-repeatable reads, phantom reads, serial reads etc.
 - Optimistic vs pessimistic concurrency control
-- Build indexes
-- Write README.md
-- Move API key from out of code - Docker volume?
+- Write README.md (include how to run via docker-compose and setting your own API key in application.yml)
 
 - Add postman collection to root directory
 - Add appropriate Fetch types
@@ -17,8 +14,6 @@ VERY IMPORTANT
 - Add custom annotation for validation
 - Setup HTTPS
 - Add retry config for feign client
-- Add executor configuration
-- Make cities case-sensitive
 
 - Add auditing in particular for CityWeatherProfile, intermediate table does not get audited on update etc.
 - Make servlet filter better
