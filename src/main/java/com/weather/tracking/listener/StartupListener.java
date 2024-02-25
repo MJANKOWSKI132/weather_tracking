@@ -27,19 +27,20 @@ public class StartupListener implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        Set<String> initialCityNames = Set.of("sydney", "melbourne", "adelaide", "perth", "darwin", "canberra");
-        Set<City> allCities = cityRepository.findAllByNameIn(initialCityNames);
-        Set<String> citiesThatAlreadyExist = allCities.stream().map(City::getName).collect(Collectors.toSet());
-        List<City> initialCities = new ArrayList<>();
-        for (String initialCityName : initialCityNames) {
-            boolean cityAlreadyExists = citiesThatAlreadyExist.contains(initialCityName);
-            if (cityAlreadyExists)
-                continue;
-            City city = new City(initialCityName);
-            initialCities.add(city);
-        }
-        cityRepository.saveAll(initialCities);
-        allCities.addAll(initialCities);
-        cityWeatherService.pollCityWeatherInformation(allCities.stream().toList());
+        // TODO: replace with data.sql
+//        Set<String> initialCityNames = Set.of("sydney", "melbourne", "adelaide", "perth", "darwin", "canberra");
+//        Set<City> allCities = cityRepository.findAllByNameIn(initialCityNames);
+//        Set<String> citiesThatAlreadyExist = allCities.stream().map(City::getName).collect(Collectors.toSet());
+//        List<City> initialCities = new ArrayList<>();
+//        for (String initialCityName : initialCityNames) {
+//            boolean cityAlreadyExists = citiesThatAlreadyExist.contains(initialCityName);
+//            if (cityAlreadyExists)
+//                continue;
+//            City city = new City(initialCityName);
+//            initialCities.add(city);
+//        }
+//        cityRepository.saveAll(initialCities);
+//        allCities.addAll(initialCities);
+//        cityWeatherService.pollCityWeatherInformation(allCities.stream().toList());
     }
 }

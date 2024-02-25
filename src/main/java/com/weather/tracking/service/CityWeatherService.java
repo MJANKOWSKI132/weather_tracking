@@ -42,13 +42,13 @@ public class CityWeatherService {
     }
 
     @Transactional
-    public void pollCityWeatherInformation() {
+    public long pollCityWeatherInformation() {
         List<City> cityList = cityRepository.findAll();
-        pollCityWeatherInformation(cityList);
+        return pollCityWeatherInformation(cityList);
     }
 
-    @Transactional(readOnly = true)
-    public void pollCityWeatherInformation(List<City> cityList) {
+    @Transactional
+    public long pollCityWeatherInformation(List<City> cityList) {
         List<CompletableFuture<Optional<CityWeather>>> weatherFutures = new ArrayList<>();
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
@@ -80,5 +80,6 @@ public class CityWeatherService {
                 .map(Optional::get)
                 .toList();
         cityWeatherRepository.saveAll(cityWeatherList);
+        return cityWeatherList.size();
     }
 }
