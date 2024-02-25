@@ -32,7 +32,4 @@ public class User extends Auditable {
         this.name = name;
         this.email = email;
     }
-
-    @OneToMany(mappedBy = "parentUser")
-    private List<WeatherProfile> weatherProfiles;
 }

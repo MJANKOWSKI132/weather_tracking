@@ -1,12 +1,17 @@
 package com.weather.tracking.service;
 
+import com.weather.tracking.dto.request.DeleteWeatherProfileRequestDto;
 import com.weather.tracking.dto.request.WeatherProfileCreationRequestDto;
+import com.weather.tracking.dto.request.WeatherProfileUpdateRequestDto;
 import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeatherProfile;
 import com.weather.tracking.entity.User;
+import com.weather.tracking.entity.WeatherProfile;
 import com.weather.tracking.exception.NoMatchingCitiesException;
+import com.weather.tracking.exception.UnauthorizedException;
 import com.weather.tracking.exception.UserDoesNotExistException;
 import com.weather.tracking.exception.WeatherProfileAlreadyExistsException;
+import com.weather.tracking.exception.WeatherProfileDoesNotExistException;
 import com.weather.tracking.repository.CityRepository;
 import com.weather.tracking.repository.UserRepository;
 import com.weather.tracking.repository.WeatherProfileRepository;
@@ -53,7 +58,7 @@ public class WeatherProfileServiceUnitTests {
 
         assertThrows(UserDoesNotExistException.class, () -> service.createWeatherProfile(weatherProfileCreationRequest));
 
-        verify(weatherProfileRepository, never()).save(any());
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
     }
 
     @Test
@@ -72,7 +77,7 @@ public class WeatherProfileServiceUnitTests {
 
         assertThrows(WeatherProfileAlreadyExistsException.class, () -> service.createWeatherProfile(weatherProfileCreationRequest));
 
-        verify(weatherProfileRepository, never()).save(any());
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
     }
 
     @Test
@@ -92,7 +97,7 @@ public class WeatherProfileServiceUnitTests {
 
         assertThrows(NoMatchingCitiesException.class, () -> service.createWeatherProfile(weatherProfileCreationRequest));
 
-        verify(weatherProfileRepository, never()).save(any());
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
     }
 
     @Test
@@ -117,7 +122,171 @@ public class WeatherProfileServiceUnitTests {
         verify(weatherProfileRepository, atMostOnce()).save(argThat(weatherProfile -> {
             return Objects.equals(weatherProfileCreationRequest.getNickname(), weatherProfile.getNickname())
                     && Objects.equals(weatherProfileCreationRequest.getUserEmail(), weatherProfile.getParentUser().getEmail())
-                    && Objects.equals(weatherProfileCreationRequest.getCityNames(), weatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).map(City::getName).collect(Collectors.toSet()));
+                    && Objects.equals(
+                            weatherProfileCreationRequest.getCityNames(),
+                            weatherProfile.getCityWeatherProfiles().stream()
+                                    .map(CityWeatherProfile::getCity)
+                                    .map(City::getName)
+                                    .collect(Collectors.toSet())
+                    );
         }));
+    }
+
+    @Test
+    public void testUpdateWeatherProfileUserDoesNotExist() {
+        WeatherProfileUpdateRequestDto weatherProfileUpdateRequest = new WeatherProfileUpdateRequestDto();
+        weatherProfileUpdateRequest.setUserEmail("michael@email.com");
+        weatherProfileUpdateRequest.setNickname("nicknameToChangeTo");
+        weatherProfileUpdateRequest.setCityNames(Set.of("melbourne", "sydney"));
+        weatherProfileUpdateRequest.setId(1L);
+
+        doReturn(false).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
+
+        assertThrows(UserDoesNotExistException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
+
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testUpdateWeatherProfileWeatherProfileDoesNotExist() {
+        WeatherProfileUpdateRequestDto weatherProfileUpdateRequest = new WeatherProfileUpdateRequestDto();
+        weatherProfileUpdateRequest.setUserEmail("michael@email.com");
+        weatherProfileUpdateRequest.setNickname("nicknameToChangeTo");
+        weatherProfileUpdateRequest.setCityNames(Set.of("melbourne", "sydney"));
+        weatherProfileUpdateRequest.setId(1L);
+
+        doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
+        doReturn(Optional.empty()).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
+
+        assertThrows(WeatherProfileDoesNotExistException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
+
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testUpdateWeatherProfileUserNotOwnerOfWeatherProfile() {
+        WeatherProfileUpdateRequestDto weatherProfileUpdateRequest = new WeatherProfileUpdateRequestDto();
+        weatherProfileUpdateRequest.setUserEmail("michael@email.com");
+        weatherProfileUpdateRequest.setNickname("nicknameToChangeTo");
+        weatherProfileUpdateRequest.setCityNames(Set.of("melbourne", "sydney"));
+        weatherProfileUpdateRequest.setId(1L);
+
+        User parentUser = new User();
+        parentUser.setEmail("michael2@email.com");
+        parentUser.setName("differentParentUserThanOneRequestingUpdate");
+
+        WeatherProfile weatherProfile = new WeatherProfile();
+        weatherProfile.setParentUser(parentUser);
+        weatherProfile.setId(1L);
+        weatherProfile.setNickname("originalNickname");
+
+        doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
+        doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
+
+        assertThrows(UnauthorizedException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
+
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testUpdateWeatherProfileConflictWithNickname() {
+        WeatherProfileUpdateRequestDto weatherProfileUpdateRequest = new WeatherProfileUpdateRequestDto();
+        weatherProfileUpdateRequest.setUserEmail("michael@email.com");
+        weatherProfileUpdateRequest.setNickname("nicknameToChangeTo");
+        weatherProfileUpdateRequest.setCityNames(Set.of("melbourne", "sydney"));
+        weatherProfileUpdateRequest.setId(1L);
+
+        User parentUser = new User();
+        parentUser.setEmail(weatherProfileUpdateRequest.getUserEmail());
+
+        WeatherProfile weatherProfile = new WeatherProfile();
+        weatherProfile.setParentUser(parentUser);
+        weatherProfile.setId(1L);
+        weatherProfile.setNickname("originalNickname");
+
+        doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
+        doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
+        doReturn(true).when(weatherProfileRepository).existsByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
+
+        assertThrows(WeatherProfileAlreadyExistsException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
+
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testUpdateWeatherProfileNoMatchingCities() {
+        WeatherProfileUpdateRequestDto weatherProfileUpdateRequest = new WeatherProfileUpdateRequestDto();
+        weatherProfileUpdateRequest.setUserEmail("michael@email.com");
+        weatherProfileUpdateRequest.setNickname("nicknameToChangeTo");
+        weatherProfileUpdateRequest.setCityNames(Set.of("melbourne", "sydney"));
+        weatherProfileUpdateRequest.setId(1L);
+
+        User parentUser = new User();
+        parentUser.setEmail(weatherProfileUpdateRequest.getUserEmail());
+
+        WeatherProfile weatherProfile = new WeatherProfile();
+        weatherProfile.setParentUser(parentUser);
+        weatherProfile.setId(1L);
+        weatherProfile.setNickname("originalNickname");
+
+        doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
+        doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
+        doReturn(false).when(weatherProfileRepository).existsByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
+        doReturn(Collections.emptySet()).when(cityRepository).findAllByNameIn(weatherProfileUpdateRequest.getCityNames());
+
+        assertThrows(NoMatchingCitiesException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
+
+        verify(weatherProfileRepository, never()).save(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testUpdateWeatherProfileSuccess() {
+        WeatherProfileUpdateRequestDto weatherProfileUpdateRequest = new WeatherProfileUpdateRequestDto();
+        weatherProfileUpdateRequest.setUserEmail("michael@email.com");
+        weatherProfileUpdateRequest.setNickname("nicknameToChangeTo");
+        weatherProfileUpdateRequest.setCityNames(Set.of("melbourne", "sydney"));
+        weatherProfileUpdateRequest.setId(1L);
+
+        User parentUser = new User();
+        parentUser.setEmail(weatherProfileUpdateRequest.getUserEmail());
+
+        WeatherProfile weatherProfile = new WeatherProfile();
+        weatherProfile.setParentUser(parentUser);
+        weatherProfile.setId(1L);
+        weatherProfile.setNickname("originalNickname");
+
+        Set<City> citySet = Set.of(new City("melbourne"), new City("sydney"));
+
+        doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
+        doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
+        doReturn(false).when(weatherProfileRepository).existsByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
+        doReturn(citySet).when(cityRepository).findAllByNameIn(weatherProfileUpdateRequest.getCityNames());
+
+        assertDoesNotThrow(() -> service.updateWeatherProfile(weatherProfileUpdateRequest));
+
+        verify(weatherProfileRepository, atMostOnce()).save(argThat(wProfile -> {
+            return Objects.equals(weatherProfileUpdateRequest.getNickname(), wProfile.getNickname())
+                    && Objects.equals(weatherProfileUpdateRequest.getUserEmail(), wProfile.getParentUser().getEmail())
+                    && Objects.equals(
+                    weatherProfileUpdateRequest.getCityNames(),
+                    wProfile.getCityWeatherProfiles().stream()
+                            .map(CityWeatherProfile::getCity)
+                            .map(City::getName)
+                            .collect(Collectors.toSet())
+            );
+        }));
+    }
+
+    @Test
+    public void testDeleteWeatherProfileUserDoesNotExist() {
+        DeleteWeatherProfileRequestDto deleteWeatherProfileRequest = new DeleteWeatherProfileRequestDto();
+        deleteWeatherProfileRequest.setId(1L);
+        deleteWeatherProfileRequest.setUserEmail("michael@email.com");
+
+        doReturn(false).when(userRepository).existsByEmail(deleteWeatherProfileRequest.getUserEmail());
+        
+        assertThrows(UserDoesNotExistException.class, () -> service.deleteWeatherProfile(deleteWeatherProfileRequest));
+
+        verify(weatherProfileRepository, never()).delete(any(WeatherProfile.class));
     }
 }

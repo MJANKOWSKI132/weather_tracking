@@ -1,8 +1,5 @@
 VERY IMPORTANT
 
-- Add unit testing
-
-
 - Ensure all columns have updated, nullable and unique set accordingly
 - Add integration testing using TestContainers
 - Add validation to incoming request bodies in particular @Email
@@ -19,15 +16,10 @@ VERY IMPORTANT
 - Add checkstyle
 
 
-- Move initial city names to external config
 - Add OpenAPI documentation to endpoints
 - Add postman collection to root directory
-- Add spring profiles
 
-- Add circuit breaker functionality?
 - Add appropriate Fetch types
-
-- Batch all possible database operations
 
 - Add custom annotation for validation
 - Setup HTTPS

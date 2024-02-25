@@ -1,6 +1,7 @@
 package com.weather.tracking.service;
 
 import com.weather.tracking.dto.request.UserRegistrationRequestDto;
+import com.weather.tracking.entity.User;
 import com.weather.tracking.exception.UserAlreadyExistsException;
 import com.weather.tracking.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,6 @@ public class UserServiceTests {
 
         assertThrows(UserAlreadyExistsException.class, () -> service.registerUser(registrationRequest));
 
-        verify(userRepository, never()).save(any());
+        verify(userRepository, never()).save(any(User.class));
     }
 }
