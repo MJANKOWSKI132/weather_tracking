@@ -9,8 +9,6 @@ import java.util.Set;
 
 @Data
 public abstract class WeatherProfileModificationRequestDto {
-    @NotEmpty(message = "Nickname cannot be empty when modifying weather profile")
-    private String nickname;
     @NotEmpty(message = "City names cannot be empty when modifying weather profile")
     @NotNull(message = "City names cannot be null when modifying weather profile")
     private Set<String> cityNames;

@@ -28,9 +28,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,7 @@ public class WeatherProfileService {
     @Auditable(action = AuditAction.CREATE_WEATHER_PROFILE)
     public WeatherProfileCreationResponseDto createWeatherProfile(WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException, NoMatchingCitiesException {
         String nickname = weatherProfileCreationRequest.getNickname();
+
         String parentUserEmail = weatherProfileCreationRequest.getUserEmail();
 
         User parentUser = userRepository
@@ -107,7 +110,8 @@ public class WeatherProfileService {
         if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail))
             throw new UnauthorizedException(String.format("The Weather Profile with ID: %s was not created by you", weatherProfileId));
 
-        if (weatherProfileRepository.existsByNicknameAndParentUserEmail(nicknameToChangeTo, parentUserEmail))
+        Optional<WeatherProfile> matchingWeatherProfileWithSameNicknameAndUser = weatherProfileRepository.findByNicknameAndParentUserEmail(nicknameToChangeTo, parentUserEmail);
+        if (matchingWeatherProfileWithSameNicknameAndUser.isPresent() && !Objects.equals(matchingWeatherProfileWithSameNicknameAndUser.get().getId(), matchingWeatherProfile.getId()))
             throw new WeatherProfileAlreadyExistsException(nicknameToChangeTo, parentUserEmail);
 
         Set<City> matchingCitiesToChangeTo = cityRepository.findAllByNameIn(caseInsensitiveCityNamesToChangeTo);
@@ -124,6 +128,9 @@ public class WeatherProfileService {
             cityWeatherProfile.setCity(city);
             matchingWeatherProfile.getCityWeatherProfiles().add(cityWeatherProfile);
         }
+
+        matchingWeatherProfile.setVersion(matchingWeatherProfile.getVersion() + 1);
+        matchingWeatherProfile.setLastModified(ZonedDateTime.now());
 
         weatherProfileRepository.save(matchingWeatherProfile);
     }

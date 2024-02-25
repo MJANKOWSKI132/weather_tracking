@@ -210,7 +210,10 @@ public class WeatherProfileServiceUnitTests {
 
         doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
         doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
-        doReturn(true).when(weatherProfileRepository).existsByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
+        WeatherProfile weatherProfileWithSameNickname = new WeatherProfile();
+        weatherProfileWithSameNickname.setNickname(weatherProfile.getNickname());
+        weatherProfileWithSameNickname.setId(weatherProfile.getId() + 1);
+        doReturn(Optional.of(weatherProfileWithSameNickname)).when(weatherProfileRepository).findByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
 
         assertThrows(WeatherProfileAlreadyExistsException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
 
@@ -235,7 +238,7 @@ public class WeatherProfileServiceUnitTests {
 
         doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
         doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
-        doReturn(false).when(weatherProfileRepository).existsByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
+        doReturn(Optional.empty()).when(weatherProfileRepository).findByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
         doReturn(Collections.emptySet()).when(cityRepository).findAllByNameIn(weatherProfileUpdateRequest.getCityNames());
 
         assertThrows(NoMatchingCitiesException.class, () -> service.updateWeatherProfile(weatherProfileUpdateRequest));
@@ -263,7 +266,7 @@ public class WeatherProfileServiceUnitTests {
 
         doReturn(true).when(userRepository).existsByEmail(weatherProfileUpdateRequest.getUserEmail());
         doReturn(Optional.of(weatherProfile)).when(weatherProfileRepository).findById(weatherProfileUpdateRequest.getId());
-        doReturn(false).when(weatherProfileRepository).existsByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
+        doReturn(Optional.empty()).when(weatherProfileRepository).findByNicknameAndParentUserEmail(weatherProfileUpdateRequest.getNickname(), parentUser.getEmail());
         doReturn(citySet).when(cityRepository).findAllByNameIn(weatherProfileUpdateRequest.getCityNames());
 
         assertDoesNotThrow(() -> service.updateWeatherProfile(weatherProfileUpdateRequest));

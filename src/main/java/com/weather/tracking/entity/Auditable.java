@@ -1,5 +1,7 @@
 package com.weather.tracking.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Column;
@@ -9,7 +11,8 @@ import javax.persistence.PreUpdate;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-@Slf4j
+@Getter
+@Setter
 public abstract class Auditable {
     @Column(name = "time_created", nullable = false, updatable = false)
     private ZonedDateTime timeCreated;

@@ -69,8 +69,8 @@ public class CityWeatherServiceUnitTests {
         OpenWeatherCityWeatherResponseDto melbourneResponse = objectMapper.readValue(melbourneResponseStr, OpenWeatherCityWeatherResponseDto.class);
         OpenWeatherCityWeatherResponseDto sydneyResponse = objectMapper.readValue(sydneyResponseStr, OpenWeatherCityWeatherResponseDto.class);
 
-        doReturn(Optional.of(melbourneResponse)).when(openWeatherClient).getWeatherInformation(eq(MELBOURNE), any(), any());
-        doReturn(Optional.of(sydneyResponse)).when(openWeatherClient).getWeatherInformation(eq(SYDNEY), any(), any());
+        doReturn(Optional.of(melbourneResponse)).when(openWeatherClient).getWeatherInformation(eq(MELBOURNE), any());
+        doReturn(Optional.of(sydneyResponse)).when(openWeatherClient).getWeatherInformation(eq(SYDNEY), any());
 
         long numberOfCityWeathersModified = assertDoesNotThrow(() -> service.pollCityWeatherInformation());
 

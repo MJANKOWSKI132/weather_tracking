@@ -76,4 +76,4 @@ CREATE TABLE IF NOT EXISTS audit_log_entry (
     additional_context VARCHAR(255) NULL
 );
 
-
+-- As an extra could build indexes

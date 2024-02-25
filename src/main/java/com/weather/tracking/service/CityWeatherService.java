@@ -28,9 +28,6 @@ public class CityWeatherService {
     private final OpenWeatherClient openWeatherClient;
     private final CityWeatherRepository cityWeatherRepository;
 
-    @Value("${apiKey}")
-    private String apiKey;
-
     public CityWeatherService(final CityRepository cityRepository,
                               final OpenWeatherClient openWeatherClient,
                               final CityWeatherRepository cityWeatherRepository) {
@@ -46,7 +43,7 @@ public class CityWeatherService {
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
-                        Optional<OpenWeatherCityWeatherResponseDto> optionalOpenWeatherCityWeatherResponse = openWeatherClient.getWeatherInformation(city.getName(), apiKey, Constants.METRIC);
+                        Optional<OpenWeatherCityWeatherResponseDto> optionalOpenWeatherCityWeatherResponse = openWeatherClient.getWeatherInformation(city.getName(), Constants.METRIC);
                         if (optionalOpenWeatherCityWeatherResponse.isEmpty())
                             return Optional.<CityWeather>empty();
                         OpenWeatherCityWeatherResponseDto responseDto = optionalOpenWeatherCityWeatherResponse.get();

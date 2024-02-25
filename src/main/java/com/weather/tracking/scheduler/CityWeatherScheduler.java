@@ -28,8 +28,16 @@ public class CityWeatherScheduler {
     public void pollCityWeatherInformation() {
         Optional<SchedulerRun> optionalCurrentlyRunningScheduleRun = schedulerRunRepository
                 .findTopByTimeFinishedIsNullAndStatusAndJobIdOrderByTimeStartedDesc(SchedulerStatus.RUNNING, JOB_ID);
-        if (optionalCurrentlyRunningScheduleRun.isPresent())
-            return;
+        if (optionalCurrentlyRunningScheduleRun.isPresent()) {
+            SchedulerRun schedulerRun = optionalCurrentlyRunningScheduleRun.get();
+            long timeElapsedSinceLastRunMS = System.currentTimeMillis() - schedulerRun.getTimeStarted().toInstant().toEpochMilli();
+            if (timeElapsedSinceLastRunMS >= DELAY) {
+                schedulerRun.completeWithError("Unknown error");
+                schedulerRunRepository.save(schedulerRun);
+            } else {
+                return;
+            }
+        }
         Optional<SchedulerRun> optionalPreviouslyRunSchedulerRun = schedulerRunRepository
                 .findTopByTimeFinishedIsNotNullAndStatusAndJobIdOrderByTimeStartedDesc(SchedulerStatus.RUNNING, JOB_ID);
         if (optionalPreviouslyRunSchedulerRun.isPresent()) {

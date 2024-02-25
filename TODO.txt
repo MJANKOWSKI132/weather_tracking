@@ -1,3 +1,2 @@
-VERY IMPORTANT
-
-- Write README.md (include how to run via docker-compose and setting your own API key in application.yml)
+- Write README.md
+- Add postman collection to root directory
