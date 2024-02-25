@@ -284,9 +284,68 @@ public class WeatherProfileServiceUnitTests {
         deleteWeatherProfileRequest.setUserEmail("michael@email.com");
 
         doReturn(false).when(userRepository).existsByEmail(deleteWeatherProfileRequest.getUserEmail());
-        
+
         assertThrows(UserDoesNotExistException.class, () -> service.deleteWeatherProfile(deleteWeatherProfileRequest));
 
         verify(weatherProfileRepository, never()).delete(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testDeleteWeatherProfileWeatherProfileDoesNotExist() {
+        DeleteWeatherProfileRequestDto deleteWeatherProfileRequest = new DeleteWeatherProfileRequestDto();
+        deleteWeatherProfileRequest.setId(1L);
+        deleteWeatherProfileRequest.setUserEmail("michael@email.com");
+
+        doReturn(true).when(userRepository).existsByEmail(deleteWeatherProfileRequest.getUserEmail());
+        doReturn(Optional.empty()).when(weatherProfileRepository).findById(deleteWeatherProfileRequest.getId());
+
+        assertThrows(WeatherProfileDoesNotExistException.class, () -> service.deleteWeatherProfile(deleteWeatherProfileRequest));
+
+        verify(weatherProfileRepository, never()).delete(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testDeleteWeatherProfileUserDoesNotOwnTheWeatherProfile() {
+        DeleteWeatherProfileRequestDto deleteWeatherProfileRequest = new DeleteWeatherProfileRequestDto();
+        deleteWeatherProfileRequest.setId(1L);
+        deleteWeatherProfileRequest.setUserEmail("michael@email.com");
+
+        User parentUser = new User();
+        parentUser.setEmail("michael2@email.com");
+
+        WeatherProfile matchingWeatherProfile = new WeatherProfile();
+        matchingWeatherProfile.setId(1L);
+        matchingWeatherProfile.setParentUser(parentUser);
+
+        doReturn(true).when(userRepository).existsByEmail(deleteWeatherProfileRequest.getUserEmail());
+        doReturn(Optional.of(matchingWeatherProfile)).when(weatherProfileRepository).findById(deleteWeatherProfileRequest.getId());
+
+        assertThrows(UnauthorizedException.class, () -> service.deleteWeatherProfile(deleteWeatherProfileRequest));
+
+        verify(weatherProfileRepository, never()).delete(any(WeatherProfile.class));
+    }
+
+    @Test
+    public void testDeleteWeatherProfileSuccess() {
+        DeleteWeatherProfileRequestDto deleteWeatherProfileRequest = new DeleteWeatherProfileRequestDto();
+        deleteWeatherProfileRequest.setId(1L);
+        deleteWeatherProfileRequest.setUserEmail("michael@email.com");
+
+        User parentUser = new User();
+        parentUser.setEmail(deleteWeatherProfileRequest.getUserEmail());
+
+        WeatherProfile matchingWeatherProfile = new WeatherProfile();
+        matchingWeatherProfile.setId(1L);
+        matchingWeatherProfile.setParentUser(parentUser);
+
+        doReturn(true).when(userRepository).existsByEmail(deleteWeatherProfileRequest.getUserEmail());
+        doReturn(Optional.of(matchingWeatherProfile)).when(weatherProfileRepository).findById(deleteWeatherProfileRequest.getId());
+
+        assertDoesNotThrow(() -> service.deleteWeatherProfile(deleteWeatherProfileRequest));
+
+        verify(weatherProfileRepository, atMostOnce()).save(argThat(wProfile -> {
+            return Objects.equals(deleteWeatherProfileRequest.getUserEmail(), wProfile.getParentUser().getEmail())
+                    && Objects.equals(deleteWeatherProfileRequest.getId(), wProfile.getId());
+        }));
     }
 }
