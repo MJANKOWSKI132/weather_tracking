@@ -1,4 +1,3 @@
-- Add Global exception handler
 - Ensure schedulers don't run in conflicting manner (fetch first 1 row only, sort by timeStarted and timeEnded and ensure no conflicts)
 - Implement Audit Logging using AuditLogEntry and AOP
 - Ensure all columns have updated, nullable and unique set accordingly
@@ -23,3 +22,7 @@
 - Build indexes
 - Implement userSecurityUtil with ThreadLocal to retrieve current username
 - Add custom annotation for validation
+- Setup HTTPS
+- Add retry config for feign client
+- Add executor configuration
+- Make equals method only compare IDs for entities

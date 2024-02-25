@@ -11,7 +11,7 @@ public class CityResponseDto {
 
     public static CityResponseDto fromEntity(City city) {
         CityResponseDto responseDto = new CityResponseDto();
-        responseDto.setName(responseDto.getName());
+        responseDto.setName(city.getName());
         return responseDto;
     }
 }

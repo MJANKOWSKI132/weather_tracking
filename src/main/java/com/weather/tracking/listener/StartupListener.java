@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class StartupListener implements ApplicationRunner {
@@ -25,15 +27,19 @@ public class StartupListener implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        List<String> initialCityNames = List.of("sydney", "melbourne", "adelaide", "perth", "darwin", "canberra");
+        Set<String> initialCityNames = Set.of("sydney", "melbourne", "adelaide", "perth", "darwin", "canberra");
+        Set<City> allCities = cityRepository.findAllByNameIn(initialCityNames);
+        Set<String> citiesThatAlreadyExist = allCities.stream().map(City::getName).collect(Collectors.toSet());
         List<City> initialCities = new ArrayList<>();
-        for (String initalCityName : initialCityNames) {
-            boolean cityAlreadyExists = cityRepository.existsByName(initalCityName);
+        for (String initialCityName : initialCityNames) {
+            boolean cityAlreadyExists = citiesThatAlreadyExist.contains(initialCityName);
             if (cityAlreadyExists)
                 continue;
-            initialCities.add(new City(initalCityName));
+            City city = new City(initialCityName);
+            initialCities.add(city);
         }
         cityRepository.saveAll(initialCities);
-        cityWeatherService.pollCityWeatherInformation(initialCities);
+        allCities.addAll(initialCities);
+        cityWeatherService.pollCityWeatherInformation(allCities.stream().toList());
     }
 }
