@@ -39,16 +39,13 @@ public class WeatherProfileService {
     private final WeatherProfileRepository weatherProfileRepository;
     private final UserRepository userRepository;
     private final CityRepository cityRepository;
-    private final CityWeatherProfileRepository cityWeatherProfileRepository;
 
     public WeatherProfileService(final WeatherProfileRepository weatherProfileRepository,
                                  final UserRepository userRepository,
-                                 final CityRepository cityRepository,
-                                 final CityWeatherProfileRepository cityWeatherProfileRepository) {
+                                 final CityRepository cityRepository) {
         this.weatherProfileRepository = weatherProfileRepository;
         this.userRepository = userRepository;
         this.cityRepository = cityRepository;
-        this.cityWeatherProfileRepository = cityWeatherProfileRepository;
     }
 
     @Transactional
@@ -71,8 +68,6 @@ public class WeatherProfileService {
         weatherProfile.setNickname(nickname);
         weatherProfile.setParentUser(parentUser);
 
-        log.info("Size of matching cities: {}", matchingCities.size());
-
         for (City city : matchingCities) {
             CityWeatherProfile cityWeatherProfile = new CityWeatherProfile();
             cityWeatherProfile.setWeatherProfile(weatherProfile);
@@ -86,6 +81,7 @@ public class WeatherProfileService {
     }
 
     @Auditable(action = AuditAction.UPDATE_WEATHER_PROFILE)
+    @Transactional
     public void updateWeatherProfile(WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws NoMatchingCitiesException, UnauthorizedException, WeatherProfileDoesNotExistException, WeatherProfileAlreadyExistsException {
         Long weatherProfileId = weatherProfileUpdateRequest.getId();
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
@@ -122,6 +118,7 @@ public class WeatherProfileService {
     }
 
     @Auditable(action = AuditAction.DELETE_WEATHER_PROFILE)
+    @Transactional
     public void deleteWeatherProfile(DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         Long weatherProfileId = deleteWeatherProfileRequest.getId();
         WeatherProfile matchingWeatherProfile = weatherProfileRepository

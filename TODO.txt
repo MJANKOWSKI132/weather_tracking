@@ -12,6 +12,7 @@ VERY IMPORTANT
 - Optimistic vs pessimistic concurrency control
 - Build indexes
 - Write README.md
+- Move API key from out of code - Docker volume?
 
 
 - Add jacoco for test coverage
