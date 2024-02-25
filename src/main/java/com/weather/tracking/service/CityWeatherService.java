@@ -1,7 +1,7 @@
 package com.weather.tracking.service;
 
 import com.weather.tracking.client.OpenWeatherClient;
-import com.weather.tracking.dto.response.CityWeatherResponseDto;
+import com.weather.tracking.dto.response.OpenWeatherCityWeatherResponseDto;
 import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeather;
 import com.weather.tracking.repository.CityRepository;
@@ -44,7 +44,7 @@ public class CityWeatherService {
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
-                        CityWeatherResponseDto responseDto = openWeatherClient.getCityLatLong(city.getName(), API_KEY, Optional.empty());
+                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getCityLatLong(city.getName(), API_KEY, Optional.empty());
                         CityWeather cityWeather = CityWeather.fromDto(responseDto);
                         cityWeather.setCity(city);
                         return Optional.of(cityWeather);

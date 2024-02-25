@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import java.util.Set;
 
 @Entity
+@Data
 public class City extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

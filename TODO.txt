@@ -15,3 +15,9 @@
 - Add spring profiles
 - Add retry functionality to OpenWeatherClient
 - Add circuit breaker functionality?
+- Add appropriate Fetch types
+- Add appropriate transaction properties (rollbackOn, session data etc.)
+- Consider concurrency concerns e.g. dirty reads, non-repeatable reads, phantom reads, serial reads etc.
+- Optimistic vs pessimistic concurrency control
+- Batch all possible database operations
+- Build indexes

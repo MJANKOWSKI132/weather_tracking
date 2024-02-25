@@ -2,23 +2,15 @@ package com.weather.tracking.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
-
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class CityWeatherResponseDto {
+public abstract class BaseCityWeatherResponseDto {
     private Main main;
     private Wind wind;
-    @JsonProperty("weather")
-    private List<Weather> weatherList;
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -49,5 +41,3 @@ public class CityWeatherResponseDto {
         private double humidity;
     }
 }
-
-

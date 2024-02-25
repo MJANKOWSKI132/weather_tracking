@@ -1,11 +1,10 @@
 package com.weather.tracking.entity;
 
-import com.weather.tracking.dto.response.CityWeatherResponseDto;
+import com.weather.tracking.dto.response.OpenWeatherCityWeatherResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -35,7 +34,7 @@ public class CityWeather extends Auditable {
     @Embedded
     private Wind wind;
 
-    public static CityWeather fromDto(CityWeatherResponseDto dto) {
+    public static CityWeather fromDto(OpenWeatherCityWeatherResponseDto dto) {
         CityWeather cityWeather = new CityWeather();
 
         Wind wind = new Wind();
