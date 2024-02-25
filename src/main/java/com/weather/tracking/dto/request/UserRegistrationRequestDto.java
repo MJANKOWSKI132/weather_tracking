@@ -6,5 +6,5 @@ import lombok.Value;
 @Data
 public class UserRegistrationRequestDto {
     private String name;
-    private String email;
+    private String userEmail;
 }

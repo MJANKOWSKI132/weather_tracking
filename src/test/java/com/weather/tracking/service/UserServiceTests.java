@@ -33,14 +33,14 @@ public class UserServiceTests {
         final String name = "mike";
 
         UserRegistrationRequestDto registrationRequest = new UserRegistrationRequestDto();
-        registrationRequest.setEmail(uniqueEmail);
+        registrationRequest.setUserEmail(uniqueEmail);
         registrationRequest.setName(name);
 
-        doReturn(false).when(userRepository).existsByEmail(registrationRequest.getEmail());
+        doReturn(false).when(userRepository).existsByEmail(registrationRequest.getUserEmail());
 
         assertDoesNotThrow(() -> service.registerUser(registrationRequest));
 
-        verify(userRepository).save(argThat(user -> Objects.equals(user.getEmail(), registrationRequest.getEmail())));
+        verify(userRepository).save(argThat(user -> Objects.equals(user.getEmail(), registrationRequest.getUserEmail())));
     }
 
     @Test
@@ -49,10 +49,10 @@ public class UserServiceTests {
         final String name = "mike";
 
         UserRegistrationRequestDto registrationRequest = new UserRegistrationRequestDto();
-        registrationRequest.setEmail(email);
+        registrationRequest.setUserEmail(email);
         registrationRequest.setName(name);
 
-        doReturn(true).when(userRepository).existsByEmail(registrationRequest.getEmail());
+        doReturn(true).when(userRepository).existsByEmail(registrationRequest.getUserEmail());
 
         assertThrows(UserAlreadyExistsException.class, () -> service.registerUser(registrationRequest));
 

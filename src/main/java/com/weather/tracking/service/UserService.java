@@ -1,6 +1,7 @@
 package com.weather.tracking.service;
 
 import com.weather.tracking.audit.Auditable;
+import com.weather.tracking.audit.RequestContextHolder;
 import com.weather.tracking.dto.request.UserRegistrationRequestDto;
 import com.weather.tracking.dto.response.UserRegistrationResponseDto;
 import com.weather.tracking.entity.User;
@@ -13,17 +14,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-
     public UserService(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Auditable(action = AuditAction.REGISTER_USER)
     public UserRegistrationResponseDto registerUser(UserRegistrationRequestDto userRegistrationRequest) throws UserAlreadyExistsException {
-        boolean userAlreadyExists = userRepository.existsByEmail(userRegistrationRequest.getEmail());
+        boolean userAlreadyExists = userRepository.existsByEmail(userRegistrationRequest.getUserEmail());
         if (userAlreadyExists)
-            throw new UserAlreadyExistsException(userRegistrationRequest.getEmail());
-        User user = new User(userRegistrationRequest.getName(), userRegistrationRequest.getEmail());
+            throw new UserAlreadyExistsException(userRegistrationRequest.getUserEmail());
+        User user = new User(userRegistrationRequest.getName(), userRegistrationRequest.getUserEmail());
         userRepository.save(user);
         return new UserRegistrationResponseDto(user.getId());
     }

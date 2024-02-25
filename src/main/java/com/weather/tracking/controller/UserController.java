@@ -16,14 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final RequestContextHolder requestContextHolder;
 
-    public UserController(final UserService userService) {
+    public UserController(final UserService userService,
+                          final RequestContextHolder requestContextHolder) {
         this.userService = userService;
+        this.requestContextHolder = requestContextHolder;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserRegistrationResponseDto registerUser(@RequestBody UserRegistrationRequestDto userRegistrationRequest) throws UserAlreadyExistsException {
+        requestContextHolder.setUserEmail(userRegistrationRequest.getUserEmail());
         return userService.registerUser(userRegistrationRequest);
     }
 }
