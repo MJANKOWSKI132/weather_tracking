@@ -7,6 +7,7 @@ import com.weather.tracking.repository.CityRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CityService {
@@ -20,6 +21,6 @@ public class CityService {
     public List<CityResponseDto> retrieveSupportedCities() {
         return cityRepository.findAll().stream()
                 .map(CityResponseDto::fromEntity)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

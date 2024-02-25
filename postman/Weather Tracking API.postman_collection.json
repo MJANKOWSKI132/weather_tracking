@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "d64f5ea9-7d40-4eaf-a84f-527ed67058cc",
+		"name": "Weather Tracking API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16520066"
+	},
+	"item": [
+		{
+			"name": "Register User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Michael\",\r\n    \"userEmail\": \"michael1@email.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve supported cities",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/city/supported",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"city",
+						"supported"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve all weather profiles for user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/weather-profile/user/all?userEmail=michael1@email.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"weather-profile",
+						"user",
+						"all"
+					],
+					"query": [
+						{
+							"key": "userEmail",
+							"value": "michael1@email.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve specific Weather Profile for user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/weather-profile/?userEmail=michael1@email.com&id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"weather-profile",
+						""
+					],
+					"query": [
+						{
+							"key": "userEmail",
+							"value": "michael1@email.com"
+						},
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Weather Profile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nickname\": \"first-profile-for-michael-1\",\r\n    \"cityNames\": [\r\n        \"perth\",\r\n        \"melbourne\",\r\n        \"sydney\"\r\n    ],\r\n    \"userEmail\": \"michael1@email.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/weather-profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"weather-profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify Weather Profile",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nickname\": \"first-profile-for-michael-1-EDITED\",\r\n    \"cityNames\": [\r\n        \"sydney\",\r\n    ],\r\n    \"userEmail\": \"michael1@email.com\",\r\n    \"id\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/weather-profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"weather-profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Weather Profile",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"userEmail\": \"michael1@email.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/weather-profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"weather-profile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -71,7 +72,7 @@ public class CityWeatherService {
                 .map(CompletableFuture::join)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .toList();
+                .collect(Collectors.toList());
         cityWeatherRepository.saveAll(cityWeatherList);
         return cityWeatherList.size();
     }

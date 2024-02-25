@@ -1,2 +1,0 @@
-- Write README.md
-- Add postman collection to root directory

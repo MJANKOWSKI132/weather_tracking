@@ -166,7 +166,7 @@ public class WeatherProfileService {
         List<WeatherProfileResponseDto> responseList = new ArrayList<>();
         for (WeatherProfile weatherProfile : weatherProfiles) {
             WeatherProfileResponseDto responseDto = new WeatherProfileResponseDto();
-            for (City city : weatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())
+            for (City city : weatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).collect(Collectors.toList()))
                 responseDto.getCityWeatherProfiles().add(CityWeatherProfileResponseDto.fromEntity(city));
             responseDto.setNickname(weatherProfile.getNickname());
             responseDto.setId(weatherProfile.getId());
@@ -189,7 +189,7 @@ public class WeatherProfileService {
             throw new UnauthorizedException(String.format("The Weather Profile with ID: %s was not created by you", id));
 
         WeatherProfileResponseDto response = new WeatherProfileResponseDto();
-        for (City city : matchingWeatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())
+        for (City city : matchingWeatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).collect(Collectors.toList()))
             response.getCityWeatherProfiles().add(CityWeatherProfileResponseDto.fromEntity(city));
         response.setNickname(matchingWeatherProfile.getNickname());
         response.setId(matchingWeatherProfile.getId());
