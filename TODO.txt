@@ -26,3 +26,5 @@
 - Add retry config for feign client
 - Add executor configuration
 - Make equals method only compare IDs for entities
+- Make cities case-sensitive
+- Investigate further into cascade types

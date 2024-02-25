@@ -56,7 +56,9 @@ public class WeatherProfileService {
         WeatherProfile weatherProfile = new WeatherProfile();
         weatherProfile.setNickname(nickname);
         weatherProfile.setParentUser(parentUser);
+
         weatherProfile.setCities(matchingCities);
+        matchingCities.forEach(city -> city.getWeatherProfiles().add(weatherProfile));
 
         weatherProfileRepository.save(weatherProfile);
 
@@ -87,8 +89,13 @@ public class WeatherProfileService {
             // TODO: throw exception here
         }
 
-        matchingWeatherProfile.setNickname(nicknameToChangeTo);
+        if (Objects.nonNull(nicknameToChangeTo))
+            matchingWeatherProfile.setNickname(nicknameToChangeTo);
+        for (City city : matchingWeatherProfile.getCities())
+            city.getWeatherProfiles().remove(matchingWeatherProfile);
         matchingWeatherProfile.setCities(matchingCitiesToChangeTo);
+        for (City city : matchingCitiesToChangeTo)
+            city.getWeatherProfiles().add(matchingWeatherProfile);
 
         weatherProfileRepository.save(matchingWeatherProfile);
     }
@@ -107,6 +114,9 @@ public class WeatherProfileService {
         if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail)) {
             //TODO: throw unauth exception
         }
+
+        for (City city : matchingWeatherProfile.getCities())
+            city.getWeatherProfiles().remove(matchingWeatherProfile);
 
         weatherProfileRepository.delete(matchingWeatherProfile);
     }

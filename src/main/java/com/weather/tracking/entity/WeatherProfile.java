@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -34,6 +35,6 @@ public class WeatherProfile extends Auditable {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User parentUser;
-    @ManyToMany(mappedBy = "weatherProfiles")
-    private Set<City> cities;
+    @ManyToMany(mappedBy = "weatherProfiles", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<City> cities = new HashSet<>();
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CityWeatherScheduler {
     private final CityWeatherService cityWeatherService;
-    private static final long DELAY = 1 * 15 * 1000;
+    private static final long DELAY = 15 * 60 * 1000;
 
     public CityWeatherScheduler(final CityWeatherService cityWeatherService) {
         this.cityWeatherService = cityWeatherService;

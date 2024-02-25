@@ -31,9 +31,9 @@ public class City extends Auditable {
     @Getter
     @Column(unique = true, updatable = false, nullable = false)
     private String name;
-    @OneToOne(mappedBy = "city", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "city")
     private CityWeather cityWeather;
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "city_weather_profile",
             joinColumns = @JoinColumn(name = "city_id"),

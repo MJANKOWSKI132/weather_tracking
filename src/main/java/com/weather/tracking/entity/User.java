@@ -35,6 +35,6 @@ public class User extends Auditable {
         this.email = email;
     }
 
-    @OneToMany(mappedBy = "parentUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentUser")
     private List<WeatherProfile> weatherProfiles;
 }
