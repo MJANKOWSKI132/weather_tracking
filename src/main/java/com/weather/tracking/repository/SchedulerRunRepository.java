@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
-// TODO: check if a scheduler run conflicts with a currently running schedule run
 @Repository
 public interface SchedulerRunRepository extends JpaRepository<SchedulerRun, Long> {
     Optional<SchedulerRun> findTopByTimeFinishedIsNotNullAndStatusAndJobIdOrderByTimeStartedDesc(SchedulerStatus status, String jobId);

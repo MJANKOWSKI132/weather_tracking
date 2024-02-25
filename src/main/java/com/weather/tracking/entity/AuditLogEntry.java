@@ -30,8 +30,10 @@ public class AuditLogEntry {
     private ZonedDateTime timeStarted;
     private ZonedDateTime timeFinished;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ActionStatus status;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AuditAction action;
     private String userEmail;
     private String additionalContext;

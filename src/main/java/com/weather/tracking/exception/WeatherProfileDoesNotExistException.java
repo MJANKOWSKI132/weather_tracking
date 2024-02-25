@@ -1,6 +1,6 @@
 package com.weather.tracking.exception;
 
-public class WeatherProfileDoesNotExistException extends Exception {
+public class WeatherProfileDoesNotExistException extends BaseCustomException {
     public WeatherProfileDoesNotExistException(String nickname, String parentUserEmail) {
         super(String.format("No such weather profile with nickname: %s exists for the user with email: %s", nickname, parentUserEmail));
     }

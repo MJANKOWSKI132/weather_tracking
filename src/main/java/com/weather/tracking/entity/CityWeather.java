@@ -53,7 +53,7 @@ public class CityWeather extends Auditable {
 
         Weather weather = new Weather();
         if (CollectionUtils.isEmpty(dto.getWeatherList()))
-            throw new RuntimeException("ERROR!"); // TODO: modify
+            throw new RuntimeException("Error, the weather list returned from OpenWeather is empty"); // TODO: change to checked exception?
         BeanUtils.copyProperties(dto.getWeatherList().get(0), weather);
         cityWeather.setWeather(weather);
 
@@ -64,9 +64,8 @@ public class CityWeather extends Auditable {
         BeanUtils.copyProperties(dto.getWind(), this.wind);
         BeanUtils.copyProperties(dto.getMain(), this.main);
 
-        Weather weather = new Weather();
         if (CollectionUtils.isEmpty(dto.getWeatherList()))
-            throw new RuntimeException("ERROR!"); // TODO: modify
+            throw new RuntimeException("Error, the weather list returned from OpenWeather is empty"); // TODO: change to checked exception?
         BeanUtils.copyProperties(dto.getWeatherList().get(0), this.weather);
     }
 

@@ -13,6 +13,8 @@ import com.weather.tracking.entity.CityWeatherProfile;
 import com.weather.tracking.entity.User;
 import com.weather.tracking.entity.WeatherProfile;
 import com.weather.tracking.enums.AuditAction;
+import com.weather.tracking.exception.NoMatchingCitiesException;
+import com.weather.tracking.exception.UnauthorizedException;
 import com.weather.tracking.exception.UserDoesNotExistException;
 import com.weather.tracking.exception.WeatherProfileAlreadyExistsException;
 import com.weather.tracking.exception.WeatherProfileDoesNotExistException;
@@ -20,6 +22,7 @@ import com.weather.tracking.repository.CityRepository;
 import com.weather.tracking.repository.CityWeatherProfileRepository;
 import com.weather.tracking.repository.UserRepository;
 import com.weather.tracking.repository.WeatherProfileRepository;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +53,7 @@ public class WeatherProfileService {
 
     @Transactional
     @Auditable(action = AuditAction.CREATE_WEATHER_PROFILE)
-    public WeatherProfileCreationResponseDto createWeatherProfile(WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException {
+    public WeatherProfileCreationResponseDto createWeatherProfile(WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException, NoMatchingCitiesException {
         String nickname = weatherProfileCreationRequest.getNickname();
         String parentUserEmail = weatherProfileCreationRequest.getUserEmail();
 
@@ -62,9 +65,8 @@ public class WeatherProfileService {
             throw new WeatherProfileAlreadyExistsException(nickname, parentUser.getEmail());
 
         Set<City> matchingCities = cityRepository.findAllByNameIn(weatherProfileCreationRequest.getCityNames());
-        if (CollectionUtils.isEmpty(matchingCities)) {
-            // TODO: throw exception here
-        }
+        if (CollectionUtils.isEmpty(matchingCities))
+            throw new NoMatchingCitiesException(weatherProfileCreationRequest.getCityNames());
         WeatherProfile weatherProfile = new WeatherProfile();
         weatherProfile.setNickname(nickname);
         weatherProfile.setParentUser(parentUser);
@@ -84,7 +86,7 @@ public class WeatherProfileService {
     }
 
     @Auditable(action = AuditAction.UPDATE_WEATHER_PROFILE)
-    public void updateWeatherProfile(WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws UserDoesNotExistException, WeatherProfileDoesNotExistException {
+    public void updateWeatherProfile(WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws NoMatchingCitiesException, UnauthorizedException, WeatherProfileDoesNotExistException, WeatherProfileAlreadyExistsException {
         Long weatherProfileId = weatherProfileUpdateRequest.getId();
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
                 .findById(weatherProfileId)
@@ -94,19 +96,16 @@ public class WeatherProfileService {
         Set<String> cityNamesToChangeTo = weatherProfileUpdateRequest.getCityNames();
         String parentUserEmail = weatherProfileUpdateRequest.getUserEmail();
 
-        if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail)) {
-            //TODO: throw unauth exception
-        }
+        if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail))
+            throw new UnauthorizedException(String.format("The Weather Profile with ID: %s was not created by you", weatherProfileId));
 
-        if (weatherProfileRepository.existsByNicknameAndParentUserEmail(nicknameToChangeTo, parentUserEmail)) {
-            // TODO: throw conflict exception
-        }
+        if (weatherProfileRepository.existsByNicknameAndParentUserEmail(nicknameToChangeTo, parentUserEmail))
+            throw new WeatherProfileAlreadyExistsException(nicknameToChangeTo, parentUserEmail);
 
 
         Set<City> matchingCitiesToChangeTo = cityRepository.findAllByNameIn(cityNamesToChangeTo);
-        if (CollectionUtils.isEmpty(matchingCitiesToChangeTo)) {
-            // TODO: throw exception here
-        }
+        if (CollectionUtils.isEmpty(matchingCitiesToChangeTo))
+            throw new NoMatchingCitiesException(cityNamesToChangeTo);
 
         if (Objects.nonNull(nicknameToChangeTo))
             matchingWeatherProfile.setNickname(nicknameToChangeTo);
@@ -123,7 +122,7 @@ public class WeatherProfileService {
     }
 
     @Auditable(action = AuditAction.DELETE_WEATHER_PROFILE)
-    public void deleteWeatherProfile(DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
+    public void deleteWeatherProfile(DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         Long weatherProfileId = deleteWeatherProfileRequest.getId();
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
                 .findById(weatherProfileId)
@@ -134,9 +133,8 @@ public class WeatherProfileService {
         if (!userRepository.existsByEmail(parentUserEmail))
             throw new UserDoesNotExistException(parentUserEmail);
 
-        if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail)) {
-            //TODO: throw unauth exception
-        }
+        if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), parentUserEmail))
+            throw new UnauthorizedException(String.format("The Weather Profile with ID: %s was not created by you", deleteWeatherProfileRequest.getId()));
 
         weatherProfileRepository.delete(matchingWeatherProfile);
     }
@@ -160,7 +158,7 @@ public class WeatherProfileService {
     }
 
     @Auditable(action = AuditAction.RETRIEVE_SPECIFIC_WEATHER_PROFILE)
-    public WeatherProfileResponseDto retrieveWeatherProfile(Long id, String userEmail) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
+    public WeatherProfileResponseDto retrieveWeatherProfile(Long id, String userEmail) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         WeatherProfile matchingWeatherProfile = weatherProfileRepository
                 .findById(id)
                 .orElseThrow(() -> new WeatherProfileDoesNotExistException(id));
@@ -168,9 +166,8 @@ public class WeatherProfileService {
         if (!userRepository.existsByEmail(userEmail))
             throw new UserDoesNotExistException(userEmail);
 
-        if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), userEmail)) {
-            //TODO: throw unauth exception
-        }
+        if (!Objects.equals(matchingWeatherProfile.getParentUser().getEmail(), userEmail))
+            throw new UnauthorizedException(String.format("The Weather Profile with ID: %s was not created by you", id));
 
         WeatherProfileResponseDto response = new WeatherProfileResponseDto();
         for (City city : matchingWeatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())

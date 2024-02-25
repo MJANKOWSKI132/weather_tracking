@@ -1,25 +1,35 @@
-- Implement Audit Logging using AuditLogEntry and AOP
+VERY IMPORTANT
+
+- Enhance the details provided in ErrorResponseDto
+- Create appropriate exceptions
+- Inspect service logic
+
 - Ensure all columns have updated, nullable and unique set accordingly
 - Add unit testing
 - Add integration testing using TestContainers
-- Add jacoco for test coverage
-- Add checkstyle
-- Enhance the details provided in ErrorResponseDto
 - Add validation to incoming request bodies in particular @Email
-- Move initial city names to external config
-- Add OpenAPI documentation to endpoints
-- Add postman collection to root directory
-- Add kubernetes file to deploy Dockerfile
-- Add spring profiles
 - Add retry functionality to OpenWeatherClient
-- Add circuit breaker functionality?
-- Add appropriate Fetch types
 - Add appropriate transaction properties (rollbackOn, session data etc.)
 - Consider concurrency concerns e.g. dirty reads, non-repeatable reads, phantom reads, serial reads etc.
 - Optimistic vs pessimistic concurrency control
-- Batch all possible database operations
 - Build indexes
-- Implement userSecurityUtil with ThreadLocal to retrieve current username
+- Write README.md
+
+
+- Add jacoco for test coverage
+- Add checkstyle
+
+
+- Move initial city names to external config
+- Add OpenAPI documentation to endpoints
+- Add postman collection to root directory
+- Add spring profiles
+
+- Add circuit breaker functionality?
+- Add appropriate Fetch types
+
+- Batch all possible database operations
+
 - Add custom annotation for validation
 - Setup HTTPS
 - Add retry config for feign client
@@ -27,5 +37,6 @@
 - Make equals method only compare IDs for entities
 - Make cities case-sensitive
 - Investigate further into cascade types
-- Create appropriate exceptions
+
 - Add auditing in particular for CityWeatherProfile, intermediate table does not get audited on update etc.
+- Make servlet filter better
