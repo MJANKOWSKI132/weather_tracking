@@ -20,14 +20,12 @@ public abstract class Auditable {
 
     @PrePersist
     protected void onCreate() {
-        log.info("Now creating entity....");
         this.timeCreated = ZonedDateTime.now();
         this.version = 1;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        log.info("Now updating entity....");
         this.lastModified = ZonedDateTime.now();
         this.version++;
     }

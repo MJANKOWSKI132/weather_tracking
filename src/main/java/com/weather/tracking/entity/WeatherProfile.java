@@ -23,18 +23,18 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class WeatherProfile extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Include
     private Long id;
     @Column(unique = true, nullable = false)
     private String nickname;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User parentUser;
-    @ManyToMany(mappedBy = "weatherProfiles", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    private Set<City> cities = new HashSet<>();
+//    @ManyToMany(mappedBy = "weatherProfiles", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+//    private Set<City> cities = new HashSet<>();
+    @OneToMany(mappedBy = "weatherProfile", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
+    private Set<CityWeatherProfile> cityWeatherProfiles = new HashSet<>();
 }

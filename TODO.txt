@@ -28,3 +28,5 @@
 - Make equals method only compare IDs for entities
 - Make cities case-sensitive
 - Investigate further into cascade types
+- Convert ManyToMany into intermediate table
+- Create appropriate exceptions

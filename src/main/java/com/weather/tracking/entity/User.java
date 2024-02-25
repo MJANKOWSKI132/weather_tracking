@@ -19,11 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Include
     private Long id;
     @Column(nullable = false)
     private String name;

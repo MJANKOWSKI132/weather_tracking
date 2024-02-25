@@ -24,26 +24,19 @@ import java.time.ZonedDateTime;
 @Entity
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class CityWeather extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @ToString.Include
-    @EqualsAndHashCode.Include
     private Long id;
     @OneToOne
     @JoinColumn(name = "city_id")
     private City city;
     @Embedded
-    @ToString.Include
     private Main main;
     @Embedded
-    @ToString.Include
     private Weather weather;
     @Embedded
-    @ToString.Include
     private Wind wind;
     private ZonedDateTime timeRetrieved;
 

@@ -30,7 +30,6 @@ public class CityWeatherService {
     private final CityRepository cityRepository;
     private final OpenWeatherClient openWeatherClient;
     private final CityWeatherRepository cityWeatherRepository;
-    private final ObjectMapper objectMapper;
 
     private static final String API_KEY = "8e3436bc12e012bc870174234b344152";
 
@@ -40,7 +39,6 @@ public class CityWeatherService {
         this.cityRepository = cityRepository;
         this.openWeatherClient = openWeatherClient;
         this.cityWeatherRepository = cityWeatherRepository;
-        this.objectMapper = new ObjectMapper();
     }
 
     @Transactional
@@ -56,11 +54,6 @@ public class CityWeatherService {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
                         OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getCityLatLong(city.getName(), API_KEY, Optional.empty());
-                        try {
-                            log.info("Received info for city: {}  -->  {}", city.getName(), objectMapper.writeValueAsString(responseDto));
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
                         CityWeather cityWeather;
                         if (Objects.isNull(city.getCityWeather())) {
                             cityWeather = CityWeather.fromDto(responseDto);
@@ -86,8 +79,6 @@ public class CityWeatherService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
-        log.info("Size of cityWeatherList: {}", cityWeatherList.size());
-        cityWeatherList.forEach(cityWeather -> System.out.println(cityWeather.toString()));
         cityWeatherRepository.saveAll(cityWeatherList);
     }
 }

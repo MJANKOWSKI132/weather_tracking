@@ -8,15 +8,19 @@ import com.weather.tracking.dto.response.WeatherProfileCreationResponseDto;
 import com.weather.tracking.dto.response.WeatherProfileResponseDto;
 import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeather;
+import com.weather.tracking.entity.CityWeatherProfile;
 import com.weather.tracking.entity.User;
 import com.weather.tracking.entity.WeatherProfile;
 import com.weather.tracking.exception.UserDoesNotExistException;
 import com.weather.tracking.exception.WeatherProfileAlreadyExistsException;
 import com.weather.tracking.exception.WeatherProfileDoesNotExistException;
 import com.weather.tracking.repository.CityRepository;
+import com.weather.tracking.repository.CityWeatherProfileRepository;
 import com.weather.tracking.repository.UserRepository;
 import com.weather.tracking.repository.WeatherProfileRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -25,19 +29,24 @@ import java.util.Objects;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class WeatherProfileService {
     private final WeatherProfileRepository weatherProfileRepository;
     private final UserRepository userRepository;
     private final CityRepository cityRepository;
+    private final CityWeatherProfileRepository cityWeatherProfileRepository;
 
     public WeatherProfileService(final WeatherProfileRepository weatherProfileRepository,
                                  final UserRepository userRepository,
-                                 final CityRepository cityRepository) {
+                                 final CityRepository cityRepository,
+                                 final CityWeatherProfileRepository cityWeatherProfileRepository) {
         this.weatherProfileRepository = weatherProfileRepository;
         this.userRepository = userRepository;
         this.cityRepository = cityRepository;
+        this.cityWeatherProfileRepository = cityWeatherProfileRepository;
     }
 
+    @Transactional
     public WeatherProfileCreationResponseDto createWeatherProfile(WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException {
         String nickname = weatherProfileCreationRequest.getNickname();
         String parentUserEmail = weatherProfileCreationRequest.getUserEmail();
@@ -57,8 +66,14 @@ public class WeatherProfileService {
         weatherProfile.setNickname(nickname);
         weatherProfile.setParentUser(parentUser);
 
-        weatherProfile.setCities(matchingCities);
-        matchingCities.forEach(city -> city.getWeatherProfiles().add(weatherProfile));
+        log.info("Size of matching cities: {}", matchingCities.size());
+
+        for (City city : matchingCities) {
+            CityWeatherProfile cityWeatherProfile = new CityWeatherProfile();
+            cityWeatherProfile.setWeatherProfile(weatherProfile);
+            cityWeatherProfile.setCity(city);
+            weatherProfile.getCityWeatherProfiles().add(cityWeatherProfile);
+        }
 
         weatherProfileRepository.save(weatherProfile);
 
@@ -91,11 +106,14 @@ public class WeatherProfileService {
 
         if (Objects.nonNull(nicknameToChangeTo))
             matchingWeatherProfile.setNickname(nicknameToChangeTo);
-        for (City city : matchingWeatherProfile.getCities())
-            city.getWeatherProfiles().remove(matchingWeatherProfile);
-        matchingWeatherProfile.setCities(matchingCitiesToChangeTo);
-        for (City city : matchingCitiesToChangeTo)
-            city.getWeatherProfiles().add(matchingWeatherProfile);
+
+        matchingWeatherProfile.getCityWeatherProfiles().clear();
+        for (City city : matchingCitiesToChangeTo) {
+            CityWeatherProfile cityWeatherProfile = new CityWeatherProfile();
+            cityWeatherProfile.setWeatherProfile(matchingWeatherProfile);
+            cityWeatherProfile.setCity(city);
+            matchingWeatherProfile.getCityWeatherProfiles().add(cityWeatherProfile);
+        }
 
         weatherProfileRepository.save(matchingWeatherProfile);
     }
@@ -115,9 +133,6 @@ public class WeatherProfileService {
             //TODO: throw unauth exception
         }
 
-        for (City city : matchingWeatherProfile.getCities())
-            city.getWeatherProfiles().remove(matchingWeatherProfile);
-
         weatherProfileRepository.delete(matchingWeatherProfile);
     }
 
@@ -130,7 +145,7 @@ public class WeatherProfileService {
         List<WeatherProfileResponseDto> responseList = new ArrayList<>();
         for (WeatherProfile weatherProfile : weatherProfiles) {
             WeatherProfileResponseDto responseDto = new WeatherProfileResponseDto();
-            for (City city : weatherProfile.getCities())
+            for (City city : weatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())
                 responseDto.getCityWeatherProfiles().add(CityWeatherProfileResponseDto.fromEntity(city));
             responseDto.setNickname(weatherProfile.getNickname());
             responseList.add(responseDto);
@@ -151,7 +166,7 @@ public class WeatherProfileService {
         }
 
         WeatherProfileResponseDto response = new WeatherProfileResponseDto();
-        for (City city : matchingWeatherProfile.getCities())
+        for (City city : matchingWeatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())
             response.getCityWeatherProfiles().add(CityWeatherProfileResponseDto.fromEntity(city));
         response.setNickname(matchingWeatherProfile.getNickname());
 
