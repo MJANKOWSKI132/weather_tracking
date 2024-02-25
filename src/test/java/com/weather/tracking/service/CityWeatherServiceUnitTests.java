@@ -1,8 +1,8 @@
 package com.weather.tracking.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.weather.tracking.client.OpenWeatherClient;
+import com.weather.tracking.client.OpenWeatherFeignClient;
 import com.weather.tracking.dto.response.OpenWeatherCityWeatherResponseDto;
 import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeather;
@@ -15,27 +15,23 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.ResourceUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CityWeatherServiceUnitTests {
@@ -73,8 +69,8 @@ public class CityWeatherServiceUnitTests {
         OpenWeatherCityWeatherResponseDto melbourneResponse = objectMapper.readValue(melbourneResponseStr, OpenWeatherCityWeatherResponseDto.class);
         OpenWeatherCityWeatherResponseDto sydneyResponse = objectMapper.readValue(sydneyResponseStr, OpenWeatherCityWeatherResponseDto.class);
 
-        doReturn(melbourneResponse).when(openWeatherClient).getWeatherInformation(eq(MELBOURNE), any(), any());
-        doReturn(sydneyResponse).when(openWeatherClient).getWeatherInformation(eq(SYDNEY), any(), any());
+        doReturn(Optional.of(melbourneResponse)).when(openWeatherClient).getWeatherInformation(eq(MELBOURNE), any(), any());
+        doReturn(Optional.of(sydneyResponse)).when(openWeatherClient).getWeatherInformation(eq(SYDNEY), any(), any());
 
         long numberOfCityWeathersModified = assertDoesNotThrow(() -> service.pollCityWeatherInformation());
 

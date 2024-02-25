@@ -75,3 +75,5 @@ CREATE TABLE IF NOT EXISTS audit_log_entry (
     user_email VARCHAR(255) NULL,
     additional_context VARCHAR(255) NULL
 );
+
+

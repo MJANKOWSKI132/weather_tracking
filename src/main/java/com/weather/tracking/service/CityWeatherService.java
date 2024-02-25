@@ -1,8 +1,7 @@
 package com.weather.tracking.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weather.tracking.client.OpenWeatherClient;
+import com.weather.tracking.client.OpenWeatherFeignClient;
 import com.weather.tracking.dto.response.OpenWeatherCityWeatherResponseDto;
 import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeather;
@@ -11,19 +10,15 @@ import com.weather.tracking.repository.CityWeatherRepository;
 import com.weather.tracking.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -51,7 +46,10 @@ public class CityWeatherService {
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
-                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getWeatherInformation(city.getName(), apiKey, Constants.METRIC);
+                        Optional<OpenWeatherCityWeatherResponseDto> optionalOpenWeatherCityWeatherResponse = openWeatherClient.getWeatherInformation(city.getName(), apiKey, Constants.METRIC);
+                        if (optionalOpenWeatherCityWeatherResponse.isEmpty())
+                            return Optional.<CityWeather>empty();
+                        OpenWeatherCityWeatherResponseDto responseDto = optionalOpenWeatherCityWeatherResponse.get();
                         CityWeather cityWeather;
                         if (Objects.isNull(city.getCityWeather())) {
                             cityWeather = CityWeather.fromDto(responseDto);

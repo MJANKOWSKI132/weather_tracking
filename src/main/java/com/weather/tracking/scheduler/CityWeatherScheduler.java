@@ -15,7 +15,7 @@ import java.util.Optional;
 public class CityWeatherScheduler {
     private final CityWeatherService cityWeatherService;
     private final SchedulerRunRepository schedulerRunRepository;
-    private static final long DELAY = 15 * 60 * 1000;
+    private static final long DELAY = 1 * 10 * 1000;
     private static final String JOB_ID = CityWeatherScheduler.class.getSimpleName();
 
     public CityWeatherScheduler(final CityWeatherService cityWeatherService,
