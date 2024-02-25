@@ -44,16 +44,11 @@ public class CityWeatherService {
     @Transactional
     public long pollCityWeatherInformation() {
         List<City> cityList = cityRepository.findAll();
-        return pollCityWeatherInformation(cityList);
-    }
-
-    @Transactional
-    public long pollCityWeatherInformation(List<City> cityList) {
         List<CompletableFuture<Optional<CityWeather>>> weatherFutures = new ArrayList<>();
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
-                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getCityLatLong(city.getName(), API_KEY, Optional.empty());
+                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getWeatherInformation(city.getName(), API_KEY, Optional.empty());
                         CityWeather cityWeather;
                         if (Objects.isNull(city.getCityWeather())) {
                             cityWeather = CityWeather.fromDto(responseDto);
