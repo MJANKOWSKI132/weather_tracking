@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -39,35 +40,35 @@ public class WeatherProfileController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public WeatherProfileCreationResponseDto createWeatherProfile(@RequestBody WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException, NoMatchingCitiesException {
+    public WeatherProfileCreationResponseDto createWeatherProfile(@Valid @RequestBody WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException, NoMatchingCitiesException {
         requestContextHolder.setUserEmail(weatherProfileCreationRequest.getUserEmail());
         return weatherProfileService.createWeatherProfile(weatherProfileCreationRequest);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateWeatherProfile(@RequestBody WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, WeatherProfileAlreadyExistsException, UnauthorizedException, NoMatchingCitiesException {
+    public void updateWeatherProfile(@Valid @RequestBody WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, WeatherProfileAlreadyExistsException, UnauthorizedException, NoMatchingCitiesException {
         requestContextHolder.setUserEmail(weatherProfileUpdateRequest.getUserEmail());
         weatherProfileService.updateWeatherProfile(weatherProfileUpdateRequest);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWeatherProfile(@RequestBody DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
+    public void deleteWeatherProfile(@Valid @RequestBody DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         requestContextHolder.setUserEmail(deleteWeatherProfileRequest.getUserEmail());
         weatherProfileService.deleteWeatherProfile(deleteWeatherProfileRequest);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public WeatherProfileResponseDto retrieveWeatherProfile(@RequestParam String userEmail, @RequestParam Long id) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
+    public WeatherProfileResponseDto retrieveWeatherProfile(@Valid @RequestParam String userEmail, @RequestParam Long id) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         requestContextHolder.setUserEmail(userEmail);
         return weatherProfileService.retrieveWeatherProfile(id, userEmail);
     }
 
     @GetMapping("/user/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<WeatherProfileResponseDto> retrieveAllWeatherProfilesForUser(@RequestParam String userEmail) throws UserDoesNotExistException {
+    public List<WeatherProfileResponseDto> retrieveAllWeatherProfilesForUser(@Valid @RequestParam String userEmail) throws UserDoesNotExistException {
         requestContextHolder.setUserEmail(userEmail);
         return weatherProfileService.retrieveWeatherProfiles(userEmail);
     }

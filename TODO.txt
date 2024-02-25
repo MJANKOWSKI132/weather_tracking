@@ -1,7 +1,6 @@
 VERY IMPORTANT
 
 - Add integration testing using TestContainers
-- Add validation to incoming request bodies in particular @Email
 - Add retry functionality to OpenWeatherClient
 - Add appropriate transaction properties (rollbackOn, session data etc.)
 - Consider concurrency concerns e.g. dirty reads, non-repeatable reads, phantom reads, serial reads etc.
@@ -11,7 +10,6 @@ VERY IMPORTANT
 - Add postman collection to root directory
 - Add appropriate Fetch types
 
-- Add custom annotation for validation
 - Setup HTTPS
 - Add retry config for feign client
 

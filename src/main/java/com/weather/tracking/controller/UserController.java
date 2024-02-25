@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -26,7 +28,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserRegistrationResponseDto registerUser(@RequestBody UserRegistrationRequestDto userRegistrationRequest) throws UserAlreadyExistsException {
+    public UserRegistrationResponseDto registerUser(@Valid @RequestBody UserRegistrationRequestDto userRegistrationRequest) throws UserAlreadyExistsException {
         requestContextHolder.setUserEmail(userRegistrationRequest.getUserEmail());
         return userService.registerUser(userRegistrationRequest);
     }

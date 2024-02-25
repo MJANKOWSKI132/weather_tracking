@@ -75,9 +75,3 @@ CREATE TABLE IF NOT EXISTS audit_log_entry (
     user_email VARCHAR(255) NULL,
     additional_context VARCHAR(255) NULL
 );
-
-CREATE INDEX index_city_name ON city (name);
-
-CREATE INDEX index_user_email ON user (email);
-
-CREATE INDEX index_weather_profile_nickname ON weather_profile (nickname);
