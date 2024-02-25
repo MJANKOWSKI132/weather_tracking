@@ -6,6 +6,8 @@ import com.weather.tracking.dto.request.WeatherProfileCreationRequestDto;
 import com.weather.tracking.dto.request.WeatherProfileUpdateRequestDto;
 import com.weather.tracking.dto.response.WeatherProfileCreationResponseDto;
 import com.weather.tracking.dto.response.WeatherProfileResponseDto;
+import com.weather.tracking.exception.NoMatchingCitiesException;
+import com.weather.tracking.exception.UnauthorizedException;
 import com.weather.tracking.exception.UserDoesNotExistException;
 import com.weather.tracking.exception.WeatherProfileAlreadyExistsException;
 import com.weather.tracking.exception.WeatherProfileDoesNotExistException;
@@ -34,25 +36,25 @@ public class WeatherProfileController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public WeatherProfileCreationResponseDto createWeatherProfile(@RequestBody WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException {
+    public WeatherProfileCreationResponseDto createWeatherProfile(@RequestBody WeatherProfileCreationRequestDto weatherProfileCreationRequest) throws WeatherProfileAlreadyExistsException, UserDoesNotExistException, NoMatchingCitiesException {
         return weatherProfileService.createWeatherProfile(weatherProfileCreationRequest);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateWeatherProfile(@RequestBody WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
+    public void updateWeatherProfile(@RequestBody WeatherProfileUpdateRequestDto weatherProfileUpdateRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, WeatherProfileAlreadyExistsException, UnauthorizedException, NoMatchingCitiesException {
         weatherProfileService.updateWeatherProfile(weatherProfileUpdateRequest);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWeatherProfile(@RequestBody DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
+    public void deleteWeatherProfile(@RequestBody DeleteWeatherProfileRequestDto deleteWeatherProfileRequest) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         weatherProfileService.deleteWeatherProfile(deleteWeatherProfileRequest);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public WeatherProfileResponseDto retrieveWeatherProfile(@RequestParam String userEmail, @RequestParam Long id) throws WeatherProfileDoesNotExistException, UserDoesNotExistException {
+    public WeatherProfileResponseDto retrieveWeatherProfile(@RequestParam String userEmail, @RequestParam Long id) throws WeatherProfileDoesNotExistException, UserDoesNotExistException, UnauthorizedException {
         return weatherProfileService.retrieveWeatherProfile(id, userEmail);
     }
 

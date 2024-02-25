@@ -1,11 +1,9 @@
 VERY IMPORTANT
 
-- Enhance the details provided in ErrorResponseDto
-- Create appropriate exceptions
-- Inspect service logic
+- Add unit testing
+
 
 - Ensure all columns have updated, nullable and unique set accordingly
-- Add unit testing
 - Add integration testing using TestContainers
 - Add validation to incoming request bodies in particular @Email
 - Add retry functionality to OpenWeatherClient
