@@ -21,3 +21,5 @@
 - Optimistic vs pessimistic concurrency control
 - Batch all possible database operations
 - Build indexes
+- Implement userSecurityUtil with ThreadLocal to retrieve current username
+- Add custom annotation for validation

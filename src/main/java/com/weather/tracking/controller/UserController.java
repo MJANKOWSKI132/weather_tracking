@@ -5,7 +5,6 @@ import com.weather.tracking.dto.response.UserRegistrationResponseDto;
 import com.weather.tracking.exception.UserAlreadyExistsException;
 import com.weather.tracking.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

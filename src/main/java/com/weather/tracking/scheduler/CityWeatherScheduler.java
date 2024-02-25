@@ -7,12 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class CityWeatherScheduler {
     private final CityWeatherService cityWeatherService;
+    private static final long DELAY = 15 * 60 * 1000;
 
     public CityWeatherScheduler(final CityWeatherService cityWeatherService) {
         this.cityWeatherService = cityWeatherService;
     }
 
-    @Scheduled(initialDelay = 15 * 60 * 1000, fixedDelay = 15 * 60 * 1000)
+    @Scheduled(initialDelay = DELAY, fixedDelay = DELAY)
     public void pollCityWeatherInformation() {
         cityWeatherService.pollCityWeatherInformation();
     }
