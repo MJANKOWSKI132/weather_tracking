@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(BaseCustomException.class)
-    public ResponseEntity<ErrorResponseDto> handleCustomException(UserAlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponseDto> handleCustomException(BaseCustomException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseDto(ex.getMessage(), ZonedDateTime.now()));
     }
 

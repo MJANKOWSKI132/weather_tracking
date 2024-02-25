@@ -154,6 +154,7 @@ public class WeatherProfileService {
             for (City city : weatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())
                 responseDto.getCityWeatherProfiles().add(CityWeatherProfileResponseDto.fromEntity(city));
             responseDto.setNickname(weatherProfile.getNickname());
+            responseDto.setId(weatherProfile.getId());
             responseList.add(responseDto);
         }
         return responseList;
@@ -176,6 +177,7 @@ public class WeatherProfileService {
         for (City city : matchingWeatherProfile.getCityWeatherProfiles().stream().map(CityWeatherProfile::getCity).toList())
             response.getCityWeatherProfiles().add(CityWeatherProfileResponseDto.fromEntity(city));
         response.setNickname(matchingWeatherProfile.getNickname());
+        response.setId(matchingWeatherProfile.getId());
 
         return response;
     }
