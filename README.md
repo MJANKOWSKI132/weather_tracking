@@ -4,6 +4,8 @@
 * Maven installed and usable via the command line I am using version 3.8.4
 * Docker and docker-compose installed and usable via the command line (I am using Docker version 20.10.0 and docker-compose version 1.29.2)
 * Java installed (I am using Java 15.0.2 2021-01-19)
+* In the path 'src/main/resources/application.yml' for the entry 'apiKey: \<insert your api key here\>' --> Input your OpenWeather API key
+  * This API key will be used to interact with the OpenWeather API
 
 Afrer the prerequisites have been met, We can run the Weather Tracking API by running the following commands in terminal, in the directory of the Weather Tracking API
 ```bash

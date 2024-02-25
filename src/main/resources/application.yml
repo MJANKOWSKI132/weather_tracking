@@ -1,4 +1,4 @@
-apiKey: 8e3436bc12e012bc870174234b344152
+apiKey: <insert your api key here>
 open-weather-url: https://api.openweathermap.org
 spring:
   datasource:
