@@ -4,4 +4,5 @@ INSERT IGNORE INTO city (name) VALUES
 ('adelaide'),
 ('perth'),
 ('darwin'),
+('brisbane'),
 ('canberra');
