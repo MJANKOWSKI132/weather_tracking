@@ -11,23 +11,14 @@ VERY IMPORTANT
 - Write README.md
 - Move API key from out of code - Docker volume?
 
-
-- Add jacoco for test coverage
-- Add checkstyle
-
-
-- Add OpenAPI documentation to endpoints
 - Add postman collection to root directory
-
 - Add appropriate Fetch types
 
 - Add custom annotation for validation
 - Setup HTTPS
 - Add retry config for feign client
 - Add executor configuration
-- Make equals method only compare IDs for entities
 - Make cities case-sensitive
-- Investigate further into cascade types
 
 - Add auditing in particular for CityWeatherProfile, intermediate table does not get audited on update etc.
 - Make servlet filter better

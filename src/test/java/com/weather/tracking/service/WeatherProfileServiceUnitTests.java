@@ -3,6 +3,7 @@ package com.weather.tracking.service;
 import com.weather.tracking.dto.request.DeleteWeatherProfileRequestDto;
 import com.weather.tracking.dto.request.WeatherProfileCreationRequestDto;
 import com.weather.tracking.dto.request.WeatherProfileUpdateRequestDto;
+import com.weather.tracking.dto.response.WeatherProfileResponseDto;
 import com.weather.tracking.entity.City;
 import com.weather.tracking.entity.CityWeatherProfile;
 import com.weather.tracking.entity.User;
@@ -22,11 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +38,7 @@ import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 public class WeatherProfileServiceUnitTests {
@@ -347,5 +351,38 @@ public class WeatherProfileServiceUnitTests {
             return Objects.equals(deleteWeatherProfileRequest.getUserEmail(), wProfile.getParentUser().getEmail())
                     && Objects.equals(deleteWeatherProfileRequest.getId(), wProfile.getId());
         }));
+    }
+
+    @Test
+    public void testRetrieveWeatherProfilesForUserUserDoesNotExist() {
+        String userEmail = "michael@email.com";
+
+        doReturn(false).when(userRepository).existsByEmail(userEmail);
+
+        assertThrows(UserDoesNotExistException.class, () -> service.retrieveWeatherProfiles(userEmail));
+
+        verifyNoInteractions(weatherProfileRepository);
+    }
+
+    @Test
+    public void testRetrieveWeatherProfilesSuccess() {
+        String userEmail = "michael@email.com";
+
+        WeatherProfile weatherProfile = new WeatherProfile();
+        weatherProfile.setId(1L);
+        weatherProfile.setNickname("nickname");
+
+        doReturn(true).when(userRepository).existsByEmail(userEmail);
+        doReturn(List.of(weatherProfile)).when(weatherProfileRepository).findAllByParentUserEmail(userEmail);
+
+        List<WeatherProfileResponseDto> weatherProfileResponseDtoList = assertDoesNotThrow(() -> service.retrieveWeatherProfiles(userEmail));
+
+        assertThat(weatherProfileResponseDtoList).hasSize(1);
+        WeatherProfileResponseDto responseDto = weatherProfileResponseDtoList.get(0);
+
+        assertThat(weatherProfile.getId()).isEqualTo(responseDto.getId());
+        assertThat(weatherProfile.getNickname()).isEqualTo(responseDto.getNickname());
+
+        verify(weatherProfileRepository, atMostOnce()).findAllByParentUserEmail(userEmail);
     }
 }
