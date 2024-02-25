@@ -22,7 +22,7 @@ import java.time.ZonedDateTime;
 @Setter
 public class SchedulerRun {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, updatable = false)
     private ZonedDateTime timeStarted;

@@ -3,14 +3,13 @@ package com.weather.tracking.entity;
 import com.weather.tracking.dto.response.OpenWeatherCityWeatherResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -27,7 +26,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 public class CityWeather extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
     @JoinColumn(name = "city_id")
@@ -38,6 +37,7 @@ public class CityWeather extends Auditable {
     private Weather weather;
     @Embedded
     private Wind wind;
+    @Column(nullable = false)
     private ZonedDateTime timeRetrieved;
 
     public static CityWeather fromDto(OpenWeatherCityWeatherResponseDto dto) {
@@ -74,6 +74,7 @@ public class CityWeather extends Auditable {
     @Data
     @NoArgsConstructor
     public static class Wind {
+        @Column(nullable = false)
         private double speed;
     }
 
@@ -82,6 +83,7 @@ public class CityWeather extends Auditable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Weather {
+        @Column(nullable = false)
         private String main;
     }
 
@@ -89,11 +91,17 @@ public class CityWeather extends Auditable {
     @Data
     @NoArgsConstructor
     public static class Main {
+        @Column(nullable = false)
         private double temp;
+        @Column(nullable = false)
         private double feelsLike;
+        @Column(nullable = false)
         private double tempMin;
+        @Column(nullable = false)
         private double tempMax;
+        @Column(nullable = false)
         private double pressure;
+        @Column(nullable = false)
         private double humidity;
     }
 }

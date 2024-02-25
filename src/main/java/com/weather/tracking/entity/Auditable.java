@@ -15,7 +15,7 @@ public abstract class Auditable {
     private ZonedDateTime timeCreated;
     @Column(name = "last_modified")
     private ZonedDateTime lastModified;
-    @Column(name = "version")
+    @Column(name = "version", nullable = false)
     private int version;
 
     @PrePersist

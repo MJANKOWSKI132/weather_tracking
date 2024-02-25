@@ -11,6 +11,6 @@ import java.util.Optional;
 // TODO: check if a scheduler run conflicts with a currently running schedule run
 @Repository
 public interface SchedulerRunRepository extends JpaRepository<SchedulerRun, Long> {
-    Optional<SchedulerRun> findTopByTimeFinishedIsNotNullAndStatusAndJobIdsOrderByTimeStartedDesc(SchedulerStatus status, String jobId);
+    Optional<SchedulerRun> findTopByTimeFinishedIsNotNullAndStatusAndJobIdOrderByTimeStartedDesc(SchedulerStatus status, String jobId);
     Optional<SchedulerRun> findTopByTimeFinishedIsNullAndStatusAndJobIdOrderByTimeStartedDesc(SchedulerStatus status, String jobId);
 }

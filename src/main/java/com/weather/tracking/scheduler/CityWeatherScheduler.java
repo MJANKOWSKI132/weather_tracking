@@ -15,7 +15,7 @@ import java.util.Optional;
 public class CityWeatherScheduler {
     private final CityWeatherService cityWeatherService;
     private final SchedulerRunRepository schedulerRunRepository;
-    private static final long DELAY = 15 * 60 * 1000;
+    private static final long DELAY = 1 * 15 * 1000;
     private static final String JOB_ID = CityWeatherScheduler.class.getSimpleName();
 
     public CityWeatherScheduler(final CityWeatherService cityWeatherService,
@@ -31,7 +31,7 @@ public class CityWeatherScheduler {
         if (optionalCurrentlyRunningScheduleRun.isPresent())
             return;
         Optional<SchedulerRun> optionalPreviouslyRunSchedulerRun = schedulerRunRepository
-                .findTopByTimeFinishedIsNotNullAndStatusAndJobIdsOrderByTimeStartedDesc(SchedulerStatus.RUNNING, JOB_ID);
+                .findTopByTimeFinishedIsNotNullAndStatusAndJobIdOrderByTimeStartedDesc(SchedulerStatus.RUNNING, JOB_ID);
         if (optionalPreviouslyRunSchedulerRun.isPresent()) {
             SchedulerRun previousRun = optionalPreviouslyRunSchedulerRun.get();
             long timeElapsedSinceLastRunMS = System.currentTimeMillis() - previousRun.getTimeFinished().toInstant().toEpochMilli();
@@ -39,6 +39,7 @@ public class CityWeatherScheduler {
                 return;
         }
         SchedulerRun schedulerRun = new SchedulerRun(JOB_ID);
+        schedulerRunRepository.save(schedulerRun);
         try {
             long numberOfCityWeathersModified = cityWeatherService.pollCityWeatherInformation();
             String additionalContext = String.format("A total of %s City Weathers were modified", numberOfCityWeathersModified);
@@ -47,6 +48,8 @@ public class CityWeatherScheduler {
             String errorMessage = String.format("An error occurred whilst running the Scheduler with Job ID: %s. Cause: %s", JOB_ID, ex.getMessage());
             log.error(errorMessage);
             schedulerRun.completeWithError(errorMessage);
+        } finally {
+            schedulerRunRepository.save(schedulerRun);
         }
     }
 }

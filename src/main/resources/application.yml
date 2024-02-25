@@ -3,9 +3,14 @@ spring:
     url: jdbc:mysql://db:3306/weather_tracking?useSSL=false
     username: root
     password: password
+  sql:
+    init:
+      mode: always
   jpa:
+    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+

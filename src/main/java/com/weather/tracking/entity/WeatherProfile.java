@@ -26,15 +26,13 @@ import java.util.Set;
 @NoArgsConstructor
 public class WeatherProfile extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private String nickname;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User parentUser;
-//    @ManyToMany(mappedBy = "weatherProfiles", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-//    private Set<City> cities = new HashSet<>();
     @OneToMany(mappedBy = "weatherProfile", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
     private Set<CityWeatherProfile> cityWeatherProfiles = new HashSet<>();
 }

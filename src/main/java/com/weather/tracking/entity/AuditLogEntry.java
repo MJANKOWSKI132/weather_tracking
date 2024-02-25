@@ -17,6 +17,6 @@ import javax.persistence.Id;
 @Setter
 public class AuditLogEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 }
