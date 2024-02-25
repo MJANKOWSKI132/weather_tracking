@@ -48,6 +48,9 @@ public class CityWeatherServiceUnitTests {
     @InjectMocks
     private CityWeatherService service;
 
+    private static final String MELBOURNE = "melbourne";
+    private static final String SYDNEY = "sydney";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     @BeforeAll
     static void setup() {
@@ -70,8 +73,8 @@ public class CityWeatherServiceUnitTests {
         OpenWeatherCityWeatherResponseDto melbourneResponse = objectMapper.readValue(melbourneResponseStr, OpenWeatherCityWeatherResponseDto.class);
         OpenWeatherCityWeatherResponseDto sydneyResponse = objectMapper.readValue(sydneyResponseStr, OpenWeatherCityWeatherResponseDto.class);
 
-        doReturn(melbourneResponse).when(openWeatherClient).getWeatherInformation(eq("melbourne"), anyString(), any());
-        doReturn(sydneyResponse).when(openWeatherClient).getWeatherInformation(eq("sydney"), anyString(), any());
+        doReturn(melbourneResponse).when(openWeatherClient).getWeatherInformation(eq(MELBOURNE), anyString(), any());
+        doReturn(sydneyResponse).when(openWeatherClient).getWeatherInformation(eq(SYDNEY), anyString(), any());
 
         long numberOfCityWeathersModified = assertDoesNotThrow(() -> service.pollCityWeatherInformation());
 
@@ -86,11 +89,11 @@ public class CityWeatherServiceUnitTests {
             cityWeatherMap.put(cityWeather.getCity().getName(), cityWeather);
         }
 
-        assertThat(cityWeatherMap).containsKey("melbourne");
-        assertThat(cityWeatherMap).containsKey("sydney");
+        assertThat(cityWeatherMap).containsKey(MELBOURNE);
+        assertThat(cityWeatherMap).containsKey(SYDNEY);
 
-        CityWeather melbourneCityWeather = cityWeatherMap.get("melbourne");
-        CityWeather sydneyCityWeather = cityWeatherMap.get("sydney");
+        CityWeather melbourneCityWeather = cityWeatherMap.get(MELBOURNE);
+        CityWeather sydneyCityWeather = cityWeatherMap.get(SYDNEY);
 
         assertThat(melbourneCityWeather)
                 .usingRecursiveComparison()

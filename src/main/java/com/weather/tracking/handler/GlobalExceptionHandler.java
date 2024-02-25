@@ -17,4 +17,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleCustomException(UserAlreadyExistsException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseDto(ex.getMessage(), ZonedDateTime.now()));
     }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ErrorResponseDto> handleGeneralException(Throwable t) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDto("An unexpected error occurred", ZonedDateTime.now()));
+    }
 }

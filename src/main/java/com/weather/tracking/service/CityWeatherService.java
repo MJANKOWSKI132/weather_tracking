@@ -48,7 +48,7 @@ public class CityWeatherService {
         for (City city : cityList) {
             CompletableFuture<Optional<CityWeather>> weatherFuture = CompletableFuture
                     .supplyAsync(() -> {
-                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getWeatherInformation(city.getName(), API_KEY, Optional.empty());
+                        OpenWeatherCityWeatherResponseDto responseDto = openWeatherClient.getWeatherInformation(city.getName(), API_KEY, null);
                         CityWeather cityWeather;
                         if (Objects.isNull(city.getCityWeather())) {
                             cityWeather = CityWeather.fromDto(responseDto);

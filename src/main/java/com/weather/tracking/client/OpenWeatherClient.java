@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
-@FeignClient(name = "open-weather-client", url = "https://api.openweathermap.org/data/2.5/weather")
+@FeignClient(name = "open-weather-client", url = "https://api.openweathermap.org")
 public interface OpenWeatherClient {
-    @GetMapping
+    @GetMapping("/data/2.5/weather")
     OpenWeatherCityWeatherResponseDto getWeatherInformation(@RequestParam(name = "q") String cityName,
                                                      @RequestParam(name = "appId") String apiKey,
-                                                     @RequestParam(defaultValue = "metric") Optional<String> optionalUnits);
+                                                     @RequestParam(defaultValue = "metric") String optionalUnits);
 }
